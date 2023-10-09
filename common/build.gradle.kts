@@ -19,8 +19,8 @@ import org.gradle.process.internal.DefaultExecOperations
 plugins {
     kotlin("jvm")
     `java-library`
-    id("designcompose.conventions.base")
-    id("designcompose.conventions.publish.jvm")
+    id("com.android.designcompose.buildCommon.base")
+    id("com.android.designcompose.buildCommon.publish.jvm")
 }
 
 publishing {

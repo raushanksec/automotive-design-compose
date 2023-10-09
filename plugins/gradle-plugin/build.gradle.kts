@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import designcompose.conventions.publish.basePom
+import com.android.designcompose.buildCommon.publish.basePom
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     kotlin("jvm")
     `java-gradle-plugin`
-    id("designcompose.conventions.base")
-    id("designcompose.conventions.publish.common")
+    id("com.android.designcompose.buildCommon.base")
+    id("com.android.designcompose.buildCommon.publish.common")
 }
 
 gradlePlugin {

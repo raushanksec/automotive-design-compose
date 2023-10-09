@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package designcompose.conventions.publish
+package com.android.designcompose.buildCommon.publish
 
 plugins {
     kotlin("jvm")
     `java-library`
-    id("designcompose.conventions.publish.common")
+    id("com.android.designcompose.buildCommon.publish.common")
 }
 
 java {

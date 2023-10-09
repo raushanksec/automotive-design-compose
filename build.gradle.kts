@@ -33,7 +33,7 @@ buildscript {
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    id("designcompose.conventions.base")
+    id("com.android.designcompose.buildCommon.base")
     id("designcompose.conventions.android-test-devices") apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.roborazzi) apply false
@@ -66,6 +66,6 @@ tasks.named("ktfmtFormat") { dependsOn(gradle.includedBuilds.map { it.task(":ktf
 
 // Apply some of our convention plugins to the tutorial app
 project("tutorial-app") {
-    plugins.apply("designcompose.conventions.base")
+    plugins.apply("com.android.designcompose.buildCommon.base")
     plugins.apply("designcompose.conventions.android-test-devices")
 }

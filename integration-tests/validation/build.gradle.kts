@@ -19,7 +19,7 @@ plugins {
     id("com.android.application")
     @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
     alias(libs.plugins.ksp)
-    id("designcompose.conventions.base")
+    id("com.android.designcompose.buildCommon.base")
     id("designcompose.conventions.android-test-devices")
     alias(libs.plugins.designcompose)
     alias(libs.plugins.roborazzi)

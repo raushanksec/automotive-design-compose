@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package designcompose.conventions.publish
+package com.android.designcompose.buildCommon.publish
 
 import org.gradle.api.publish.maven.MavenPom
 

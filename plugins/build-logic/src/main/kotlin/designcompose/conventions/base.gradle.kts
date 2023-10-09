@@ -21,6 +21,7 @@ import com.google.devtools.ksp.gradle.KspTask
 import com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask
 
 plugins {
+    id("com.android.designcompose.buildCommon.base")
     id("com.ncorti.ktfmt.gradle")
     id("com.google.android.gms.strict-version-matcher-plugin")
 }
@@ -45,23 +46,17 @@ val ktfmtCheckBuildScripts =
         }
     }
 
-project.plugins.withType(JavaBasePlugin::class.java) {
-    project.extensions.getByType(JavaPluginExtension::class.java).toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
-}
-
-// This block can go away once Gradle 8.1 is released
+// This block can go away once AGP 8.1 is released
 // https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
 project.plugins.withType(com.android.build.gradle.BasePlugin::class.java) {
-    project.extensions.getByType(BaseExtension::class.java).compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
+//    project.extensions.getByType(BaseExtension::class.java).compileOptions {
+//        sourceCompatibility = JavaVersion.VERSION_11
+//        targetCompatibility = JavaVersion.VERSION_11
+//    }
 
     // Replace dependencies on DesignCompose with our project. Because of the way we include our
     // reference apps, we need to only do so the gradle project being run actually includes
-    // DesiggnCompose
+    // DesignCompose
     if (findProject(":designcompose") != null) {
         configurations.all {
             resolutionStrategy.dependencySubstitution {

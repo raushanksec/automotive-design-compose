@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package designcompose.conventions.publish
+package com.android.designcompose.buildCommon.publish
 
-import org.gradle.accessors.dm.LibrariesForLibs
+//import org.gradle.accessors.dm.LibrariesForLibs
 
 plugins { `maven-publish` }
 
-group = "com.android.designcompose"
 
-// This serves as a proxy for the regular way to fetch Gradle version catalogs, which
-// aren't available inside a pre-built plugin
-val libs = the<LibrariesForLibs>()
-
-version =
-    (project.findProperty("designComposeReleaseVersion") ?: libs.versions.designcompose.get())
-        .toString()
-        .trimStart('v')
+//// This serves as a proxy for the regular way to fetch Gradle version catalogs, which
+//// aren't available inside a pre-built plugin
+//val libs = the<LibrariesForLibs>()
+//
+//version =
+//    (project.findProperty("designComposeReleaseVersion") ?: libs.versions.designcompose.get())
+//        .toString()
+//        .trimStart('v')
 
 publishing {
     repositories {
@@ -40,15 +39,10 @@ publishing {
         // See `dev-scripts/test-standalone-projects.sh` for an example.
         val DesignComposeMavenRepo: String? by project
 
-        // The default publish dir is meant to be within the main build's buildDir.
-        // If the publishing project (like the plugin) is an included build then put the output in
-        // the parent's buildDir
-        val defaultPublishDir = gradle.parent?.rootProject?.buildDir ?: rootProject.buildDir
-
         // This will create the `publish*ToLocalDirRepository` tasks
         maven {
             name = "localDir"
-            url = uri(DesignComposeMavenRepo ?: File(defaultPublishDir, "designcompose_m2repo"))
+            url = uri(DesignComposeMavenRepo ?: rootProject.layout.buildDirectory.dir("designcompose_m2repo"))
         }
     }
 }

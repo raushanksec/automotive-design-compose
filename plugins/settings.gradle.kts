@@ -30,14 +30,12 @@ pluginManagement {
         gradlePluginPortal()
         google()
     }
-    includeBuild("../build-logic")
+    includeBuild("../build-common")
 }
 
-plugins {
-    // Downloads the required Java Toolchain, if needed.
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.7.0"
-}
 
 include("cargo-plugin")
 
 include("gradle-plugin")
+
+include("build-logic")

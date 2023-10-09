@@ -17,7 +17,7 @@
 plugins {
     groovy
     `java-gradle-plugin`
-    id("designcompose.conventions.base")
+    id("com.android.designcompose.buildCommon.base")
     kotlin("jvm")
 }
 

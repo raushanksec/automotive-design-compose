@@ -22,8 +22,8 @@ plugins {
     alias(libs.plugins.designcompose) // Allows us to get the Figma Token
 
     // Plugins from our buildSrc
-    id("designcompose.conventions.base")
-    id("designcompose.conventions.publish.android")
+    id("com.android.designcompose.buildCommon.base")
+    id("com.android.designcompose.buildCommon.publish.android")
     id("designcompose.conventions.android-test-devices")
 }
 

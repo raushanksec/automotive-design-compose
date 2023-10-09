@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        // These are plugins that are published as external jars, integrating directly into the
-        // build scripts
-        classpath(libs.kotlin.gradlePlugin)
-    }
-}
+//buildscript {
+//    repositories {
+//        google()
+//        mavenCentral()
+//    }
+//    dependencies {
+//        // These are plugins that are published as external jars, integrating directly into the
+//        // build scripts
+//        classpath(libs.kotlin.gradlePlugin)
+//    }
+//}
 
-plugins { id("designcompose.conventions.base") }
+plugins {
+    kotlin("jvm")
+    alias(libs.plugins.ktfmt)
+    id("com.android.designcompose.buildCommon.base") }
+
+println("version ${project.version}")
