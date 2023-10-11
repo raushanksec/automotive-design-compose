@@ -75,68 +75,68 @@ class BuilderProcessor(private val codeGenerator: CodeGenerator, val logger: KSP
         this.write(str.toByteArray())
     }
 
+    fun createNewFile(className: String, packageName: String, dependencies: Set<KSFile>): OutputStream {
+        val fileName = className.replace('.', '_') + "_gen"
+        val file =
+            codeGenerator.createNewFile(
+                dependencies = Dependencies(false, *dependencies.toTypedArray()),
+                packageName = packageName,
+                fileName = fileName
+            )
+        file += "package $packageName\n\n"
+        file += "import androidx.compose.runtime.Composable\n"
+        file += "import androidx.compose.ui.text.TextStyle\n"
+        file += "import android.graphics.Bitmap\n"
+        file += "import androidx.compose.ui.Modifier\n"
+        file += "import androidx.compose.runtime.mutableStateOf\n"
+        file += "import androidx.compose.runtime.remember\n"
+        file += "import androidx.compose.ui.platform.ComposeView\n"
+        file += "import androidx.compose.runtime.CompositionLocalProvider\n"
+        file += "import androidx.compose.runtime.compositionLocalOf\n"
+        file += "import android.widget.FrameLayout\n"
+        file += "import android.util.DisplayMetrics\n"
+        file += "import android.app.Activity\n"
+        file += "import android.view.ViewGroup\n"
+        file += "import android.os.Build\n"
+
+        file += "import com.android.designcompose.annotation.DesignMetaKey\n"
+        file += "import com.android.designcompose.serdegen.NodeQuery\n"
+        file += "import com.android.designcompose.common.DocumentServerParams\n"
+        file += "import com.android.designcompose.ComponentReplacementContext\n"
+        file += "import com.android.designcompose.ImageReplacementContext\n"
+        file += "import com.android.designcompose.CustomizationContext\n"
+        file += "import com.android.designcompose.DesignDoc\n"
+        file += "import com.android.designcompose.DesignComposeCallbacks\n"
+        file += "import com.android.designcompose.DesignSwitcherPolicy\n"
+        file += "import com.android.designcompose.OpenLinkCallback\n"
+        file += "import com.android.designcompose.DesignNodeData\n"
+        file += "import com.android.designcompose.DesignInjectKey\n"
+        file += "import com.android.designcompose.ListContent\n"
+        file += "import com.android.designcompose.setKey\n"
+        file += "import com.android.designcompose.mergeFrom\n"
+        file += "import com.android.designcompose.setComponent\n"
+        file += "import com.android.designcompose.setContent\n"
+        file += "import com.android.designcompose.setListContent\n"
+        file += "import com.android.designcompose.setCustomComposable\n"
+        file += "import com.android.designcompose.setImage\n"
+        file += "import com.android.designcompose.setImageWithContext\n"
+        file += "import com.android.designcompose.setMeterValue\n"
+        file += "import com.android.designcompose.setMeterFunction\n"
+        file += "import com.android.designcompose.setModifier\n"
+        file += "import com.android.designcompose.setTapCallback\n"
+        file += "import com.android.designcompose.setOpenLinkCallback\n"
+        file += "import com.android.designcompose.setText\n"
+        file += "import com.android.designcompose.setTextFunction\n"
+        file += "import com.android.designcompose.setVariantProperties\n"
+        file += "import com.android.designcompose.setVisible\n"
+        file += "import com.android.designcompose.TapCallback\n"
+        file += "import com.android.designcompose.ParentComponentInfo\n"
+        file += "import com.android.designcompose.LocalCustomizationContext\n\n"
+
+        return file
+    }
+
     override fun process(resolver: Resolver): List<KSAnnotated> {
-
-        fun createNewFile(packageName: String, dependencies: Set<KSFile>): OutputStream {
-            val fileName = packageName.replace('.', '_') + "_gen"
-            val file =
-                codeGenerator.createNewFile(
-                    dependencies = Dependencies(false, *dependencies.toTypedArray()),
-                    packageName = packageName,
-                    fileName = fileName
-                )
-            file += "package $packageName\n\n"
-            file += "import androidx.compose.runtime.Composable\n"
-            file += "import androidx.compose.ui.text.TextStyle\n"
-            file += "import android.graphics.Bitmap\n"
-            file += "import androidx.compose.ui.Modifier\n"
-            file += "import androidx.compose.runtime.mutableStateOf\n"
-            file += "import androidx.compose.runtime.remember\n"
-            file += "import androidx.compose.ui.platform.ComposeView\n"
-            file += "import androidx.compose.runtime.CompositionLocalProvider\n"
-            file += "import androidx.compose.runtime.compositionLocalOf\n"
-            file += "import android.widget.FrameLayout\n"
-            file += "import android.util.DisplayMetrics\n"
-            file += "import android.app.Activity\n"
-            file += "import android.view.ViewGroup\n"
-            file += "import android.os.Build\n"
-
-            file += "import com.android.designcompose.annotation.DesignMetaKey\n"
-            file += "import com.android.designcompose.serdegen.NodeQuery\n"
-            file += "import com.android.designcompose.common.DocumentServerParams\n"
-            file += "import com.android.designcompose.ComponentReplacementContext\n"
-            file += "import com.android.designcompose.ImageReplacementContext\n"
-            file += "import com.android.designcompose.CustomizationContext\n"
-            file += "import com.android.designcompose.DesignDoc\n"
-            file += "import com.android.designcompose.DesignComposeCallbacks\n"
-            file += "import com.android.designcompose.DesignSwitcherPolicy\n"
-            file += "import com.android.designcompose.OpenLinkCallback\n"
-            file += "import com.android.designcompose.DesignNodeData\n"
-            file += "import com.android.designcompose.DesignInjectKey\n"
-            file += "import com.android.designcompose.ListContent\n"
-            file += "import com.android.designcompose.setKey\n"
-            file += "import com.android.designcompose.mergeFrom\n"
-            file += "import com.android.designcompose.setComponent\n"
-            file += "import com.android.designcompose.setContent\n"
-            file += "import com.android.designcompose.setListContent\n"
-            file += "import com.android.designcompose.setCustomComposable\n"
-            file += "import com.android.designcompose.setImage\n"
-            file += "import com.android.designcompose.setImageWithContext\n"
-            file += "import com.android.designcompose.setMeterValue\n"
-            file += "import com.android.designcompose.setMeterFunction\n"
-            file += "import com.android.designcompose.setModifier\n"
-            file += "import com.android.designcompose.setTapCallback\n"
-            file += "import com.android.designcompose.setOpenLinkCallback\n"
-            file += "import com.android.designcompose.setText\n"
-            file += "import com.android.designcompose.setTextFunction\n"
-            file += "import com.android.designcompose.setVariantProperties\n"
-            file += "import com.android.designcompose.setVisible\n"
-            file += "import com.android.designcompose.TapCallback\n"
-            file += "import com.android.designcompose.ParentComponentInfo\n"
-            file += "import com.android.designcompose.LocalCustomizationContext\n\n"
-
-            return file
-        }
 
         fun createJsonFile(packageName: String, dependencies: Set<KSFile>): OutputStream {
             val fileName = packageName.replace('.', '_') + "_gen"
@@ -159,22 +159,23 @@ class BuilderProcessor(private val codeGenerator: CodeGenerator, val logger: KSP
 
         // Because we make one file per package, first go through the found symbols and build a
         // map of each package to the files that contribute to it
+
+
         val dependencies: HashMap<String, MutableSet<KSFile>> = HashMap()
         symbols.forEach {
             it.containingFile?.let(
-                dependencies.getOrPut(it.packageName.asString()) { mutableSetOf<KSFile>() }::add
+                dependencies.getOrPut(it.packageName.toString()) { mutableSetOf<KSFile>() }::add
+
             )
         }
 
+
         // Using these dependency lists, create the initial file for each package
-        val outputStreams: HashMap<String, OutputStream> = HashMap()
         val jsonStreams: HashMap<String, OutputStream> = HashMap()
-        dependencies.forEach { outputStreams[it.key] = createNewFile(it.key, it.value.toSet()) }
         dependencies.forEach { jsonStreams[it.key] = createJsonFile(it.key, it.value.toSet()) }
 
         // Now build out the file per symbol
-        symbols.forEach { it.accept(DesignDocVisitor(outputStreams, jsonStreams), Unit) }
-        outputStreams.values.forEach { it.close() }
+        symbols.forEach { it.accept(DesignDocVisitor(jsonStreams), Unit) }
         jsonStreams.values.forEach { it.close() }
         // val ret = symbols.filterNot { it.validate() }.toList()
 
@@ -211,7 +212,6 @@ class BuilderProcessor(private val codeGenerator: CodeGenerator, val logger: KSP
     }
 
     inner class DesignDocVisitor(
-        private val outputStreams: HashMap<String, OutputStream>,
         private val jsonStreams: HashMap<String, OutputStream>,
     ) : KSVisitorVoid() {
         private var docName: String = ""
@@ -259,7 +259,7 @@ class BuilderProcessor(private val codeGenerator: CodeGenerator, val logger: KSP
             }
             // Get the output stream for the file associated with the class's package name
             val packageName = classDeclaration.packageName.asString()
-            currentStream = outputStreams[packageName]
+            currentStream = createNewFile(classDeclaration.simpleName.asString(), classDeclaration.packageName.asString(), setOf(classDeclaration.containingFile!!))
             currentJsonStream = jsonStreams[packageName]
             val out = currentStream!!
 
@@ -436,6 +436,7 @@ class BuilderProcessor(private val codeGenerator: CodeGenerator, val logger: KSP
 
             val gson = GsonBuilder().setPrettyPrinting().create()
             currentJsonStream?.appendText(gson.toJson(designDocJson))
+            currentStream!!.close()
         }
 
         override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit) {

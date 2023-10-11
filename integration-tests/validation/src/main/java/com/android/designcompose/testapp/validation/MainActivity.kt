@@ -69,7 +69,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.designcompose.ComponentReplacementContext
-import com.android.designcompose.DesignComposeCallbacks
 import com.android.designcompose.DesignSettings
 import com.android.designcompose.GetDesignNodeData
 import com.android.designcompose.ImageReplacementContext
@@ -77,7 +76,6 @@ import com.android.designcompose.LazyContentSpan
 import com.android.designcompose.ListContent
 import com.android.designcompose.ListContentData
 import com.android.designcompose.Meter
-import com.android.designcompose.OpenLinkCallback
 import com.android.designcompose.TapCallback
 import com.android.designcompose.annotation.Design
 import com.android.designcompose.annotation.DesignComponent
@@ -88,6 +86,14 @@ import com.android.designcompose.annotation.DesignMetaKey
 import com.android.designcompose.annotation.DesignPreviewContent
 import com.android.designcompose.annotation.DesignVariant
 import com.android.designcompose.annotation.PreviewNode
+import com.android.designcompose.testapp.validation.examples.GridItemType
+import com.android.designcompose.testapp.validation.examples.GridLayoutTest
+import com.android.designcompose.testapp.validation.examples.HelloWorld
+import com.android.designcompose.testapp.validation.examples.ImageUpdateTest
+import com.android.designcompose.testapp.validation.examples.ItemType
+import com.android.designcompose.testapp.validation.examples.OpenLinkTest
+import com.android.designcompose.testapp.validation.examples.SquareColor
+import com.android.designcompose.testapp.validation.examples.TelltaleTest
 import java.lang.Float.max
 import java.lang.Float.min
 import kotlin.math.roundToInt
@@ -155,144 +161,6 @@ val EXAMPLES: ArrayList<Triple<String, @Composable () -> Unit, String?>> =
         Triple("Variable Borders", { VariableBorderTest() }, "MWnVAfW3FupV4VMLNR1m67")
     )
 
-// TEST Basic Hello World example
-@DesignDoc(id = "pxVlixodJqZL95zo2RzTHl")
-interface HelloWorld {
-    @DesignComponent(node = "#MainFrame") fun Main(@Design(node = "#Name") name: String)
-}
-
-@Composable
-fun HelloWorld() {
-    HelloWorldDoc.Main(
-        name = "World",
-        designComposeCallbacks =
-            DesignComposeCallbacks(
-                docReadyCallback = { id ->
-                    Log.i("DesignCompose", "HelloWorld Ready: doc ID = $id")
-                },
-                newDocDataCallback = { docId, data ->
-                    Log.i(
-                        "DesignCompose",
-                        "HelloWorld Updated doc ID $docId: ${data?.size ?: 0} bytes"
-                    )
-                },
-            )
-    )
-}
-
-// TEST Image Update Test. After this loads, rename #Stage in the Figma doc. After the app
-// updates,
-// rename it back to #Stage. The image should reload correctly.
-@DesignDoc(id = "oQw7kiy94fvdVouCYBC9T0")
-interface ImageUpdateTest {
-    @DesignComponent(node = "#Stage") fun Main() {}
-}
-
-@Composable
-fun ImageUpdateTest() {
-    ImageUpdateTestDoc.Main()
-}
-
-// TEST Telltale Test. Tests that rendering telltales as frames and as components is correct.
-// When visibility is set to true, the telltales rendered in the app should match the #Main frame
-// in the Figma document.
-@DesignDoc(id = "TZgHrKWx8wvQM7UPTyEpmz")
-interface TelltaleTest {
-    @DesignComponent(node = "#Main")
-    fun Main(
-        @Design(node = "#left_f") leftFrame: Boolean,
-        @Design(node = "#seat_f") seatFrame: Boolean,
-        @Design(node = "#left_i") leftInstance: Boolean,
-        @Design(node = "#seat_i") seatInstance: Boolean,
-        @Design(node = "#low_i") lowInstance: Boolean,
-        @Design(node = "#brights_i") brightsInstance: Boolean,
-    )
-}
-
-@Composable
-fun TelltaleTest() {
-    TelltaleTestDoc.Main(
-        leftFrame = true,
-        seatFrame = true,
-        leftInstance = true,
-        seatInstance = true,
-        lowInstance = true,
-        brightsInstance = true
-    )
-}
-
-// TEST Open Link Test. Tests that the open link interaction works on frames and components. Tap
-// the squares and watch the output. Tapping the "Swap" button should change the behavior of the
-// taps.
-enum class SquareColor {
-    Red,
-    Green,
-    Blue
-}
-
-enum class SquareShadow {
-    On,
-    Off
-}
-
-@DesignDoc(id = "r7m4tqyKv6y9DWcg7QBEDf")
-interface OpenLinkTest {
-    @DesignComponent(node = "#MainFrame")
-    fun MainFrame(
-        @Design(node = "#Name") name: String,
-        @Design(node = "#Content") content: @Composable () -> Unit,
-        @Design(node = "#Swap") clickSwap: Modifier,
-    )
-
-    @DesignComponent(node = "#Red") fun Red() {}
-
-    @DesignComponent(node = "#Green") fun Green() {}
-
-    @DesignComponent(node = "#Blue") fun Blue() {}
-
-    @DesignComponent(node = "#PurpleCircle") fun PurpleCircle() {}
-
-    @DesignComponent(node = "#SquareShadow")
-    fun Square(
-        @DesignVariant(property = "#SquareShadow") shadow: SquareShadow,
-        @DesignVariant(property = "#SquareColor") color: SquareColor,
-        @Design(node = "#icon") icon: @Composable () -> Unit
-    )
-}
-
-@Composable
-fun OpenLinkTest() {
-    val openLinkOne = OpenLinkCallback { url -> Log.i("DesignCompose", "Open Link ONE: $url") }
-    val openLinkTwo = OpenLinkCallback { url -> Log.i("DesignCompose", "Open Link TWO: $url") }
-    val (useFuncOne, setUseFuncOne) = remember { mutableStateOf(true) }
-    val openLinkFunc =
-        if (useFuncOne) {
-            openLinkOne
-        } else {
-            openLinkTwo
-        }
-
-    OpenLinkTestDoc.MainFrame(
-        name = "Rob",
-        openLinkCallback = openLinkFunc,
-        content = {
-            OpenLinkTestDoc.Red()
-            OpenLinkTestDoc.Green()
-            OpenLinkTestDoc.Blue()
-            OpenLinkTestDoc.Square(
-                shadow = SquareShadow.On,
-                color = SquareColor.Green,
-                icon = { OpenLinkTestDoc.PurpleCircle() }
-            )
-            OpenLinkTestDoc.Square(
-                shadow = SquareShadow.On,
-                color = SquareColor.Red,
-                icon = { OpenLinkTestDoc.PurpleCircle() }
-            )
-        },
-        clickSwap = Modifier.clickable { setUseFuncOne(!useFuncOne) }
-    )
-}
 
 // TEST Variant Asterisk Test. Tests the @DesignVariant annotation and the ability to match
 // variant nodes whose property names and values match the current state passed in.
@@ -825,209 +693,6 @@ fun LazyGridItemSpans() {
             }
         }
     }
-}
-
-enum class ItemType {
-    Grid,
-    List
-}
-
-// TEST Grid Layout
-@DesignDoc(id = "JOSOEvsrjvMqanyQa5OpNR")
-interface GridLayoutTest {
-    @DesignComponent(node = "#MainFrame")
-    fun MainFrame(
-        @DesignContentTypes(nodes = ["#SectionTitle", "#Item"])
-        @DesignPreviewContent(
-            name = "Browse",
-            nodes =
-                [
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(6, "#Item=Grid"),
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(4, "#Item=Grid")
-                ]
-        )
-        @Design(node = "#VerticalGrid1")
-        vertical1: ListContent,
-        @DesignContentTypes(nodes = ["#SectionTitle", "#VItem"])
-        @DesignPreviewContent(
-            name = "Browse",
-            nodes =
-                [
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(6, "#VItem=Grid"),
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(4, "#VItem=Grid")
-                ]
-        )
-        @Design(node = "#HorizontalGrid1")
-        horizontal1: ListContent,
-        @DesignContentTypes(nodes = ["#SectionTitle", "#Item"])
-        @DesignPreviewContent(
-            name = "Browse",
-            nodes =
-                [
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(6, "#Item=Grid"),
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(8, "#Item=Grid"),
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(6, "#Item=Grid"),
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(10, "#Item=List")
-                ]
-        )
-        @Design(node = "#VerticalGrid2")
-        vertical2: ListContent,
-        @DesignContentTypes(nodes = ["#SectionTitle", "#VItem"])
-        @DesignPreviewContent(
-            name = "Browse",
-            nodes =
-                [
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(6, "#VItem=Grid"),
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(6, "#VItem=Grid"),
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(6, "#VItem=Grid"),
-                    PreviewNode(1, "#SectionTitle"),
-                    PreviewNode(11, "#VItem=List")
-                ]
-        )
-        @Design(node = "#HorizontalGrid2")
-        horizontal2: ListContent,
-    )
-    @DesignComponent(node = "#Item")
-    fun Item(
-        @DesignVariant(property = "#Item") type: ItemType,
-        @Design(node = "#Title") title: String,
-    )
-    @DesignComponent(node = "#VItem")
-    fun VItem(
-        @DesignVariant(property = "#VItem") type: ItemType,
-        @Design(node = "#Title") title: String,
-    )
-    @DesignComponent(node = "#SectionTitle")
-    fun SectionTitle(@Design(node = "#Title") title: String)
-    @DesignComponent(node = "#VSectionTitle")
-    fun VSectionTitle(@Design(node = "#Title") title: String)
-}
-
-enum class GridItemType {
-    SectionTitle,
-    VSectionTitle,
-    RowGrid,
-    RowList,
-    ColGrid,
-    ColList,
-}
-
-@Composable
-fun GridLayoutTest() {
-    val vertItems: ArrayList<Pair<GridItemType, String>> = arrayListOf()
-    for (i in 1..20) vertItems.add(Pair(GridItemType.RowGrid, "Item $i"))
-    for (i in 21..40) vertItems.add(Pair(GridItemType.RowList, "Row Item $i"))
-    vertItems.add(0, Pair(GridItemType.SectionTitle, "Group One"))
-    vertItems.add(7, Pair(GridItemType.SectionTitle, "Group Two"))
-    vertItems.add(12, Pair(GridItemType.SectionTitle, "Group Three"))
-    vertItems.add(20, Pair(GridItemType.SectionTitle, "Group Four"))
-
-    val horizItems: ArrayList<Pair<GridItemType, String>> = arrayListOf()
-    for (i in 1..20) horizItems.add(Pair(GridItemType.ColGrid, "Item $i"))
-    for (i in 21..40) horizItems.add(Pair(GridItemType.ColList, "Row Item $i"))
-    horizItems.add(0, Pair(GridItemType.SectionTitle, "Group One"))
-    horizItems.add(7, Pair(GridItemType.SectionTitle, "Group Two"))
-    horizItems.add(14, Pair(GridItemType.SectionTitle, "Group Three"))
-    horizItems.add(20, Pair(GridItemType.SectionTitle, "Group Four"))
-
-    fun getNodeData(items: ArrayList<Pair<GridItemType, String>>, index: Int): GetDesignNodeData {
-        return when (items[index].first) {
-            GridItemType.SectionTitle -> {
-                { GridLayoutTestDoc.SectionTitleDesignNodeData() }
-            }
-            GridItemType.VSectionTitle -> {
-                { GridLayoutTestDoc.VSectionTitleDesignNodeData() }
-            }
-            GridItemType.RowGrid -> {
-                { GridLayoutTestDoc.ItemDesignNodeData(type = ItemType.Grid) }
-            }
-            GridItemType.RowList -> {
-                { GridLayoutTestDoc.ItemDesignNodeData(type = ItemType.List) }
-            }
-            GridItemType.ColGrid -> {
-                { GridLayoutTestDoc.VItemDesignNodeData(type = ItemType.Grid) }
-            }
-            GridItemType.ColList -> {
-                { GridLayoutTestDoc.VItemDesignNodeData(type = ItemType.List) }
-            }
-        }
-    }
-
-    @Composable
-    fun itemComposable(items: ArrayList<Pair<GridItemType, String>>, index: Int) {
-        when (items[index].first) {
-            GridItemType.SectionTitle -> GridLayoutTestDoc.SectionTitle(title = items[index].second)
-            GridItemType.VSectionTitle ->
-                GridLayoutTestDoc.VSectionTitle(title = items[index].second)
-            GridItemType.RowGrid ->
-                GridLayoutTestDoc.Item(type = ItemType.Grid, title = items[index].second)
-            GridItemType.RowList ->
-                GridLayoutTestDoc.Item(type = ItemType.List, title = items[index].second)
-            GridItemType.ColGrid ->
-                GridLayoutTestDoc.VItem(type = ItemType.Grid, title = items[index].second)
-            GridItemType.ColList ->
-                GridLayoutTestDoc.VItem(type = ItemType.List, title = items[index].second)
-        }
-    }
-
-    GridLayoutTestDoc.MainFrame(
-        modifier = Modifier.fillMaxSize(),
-        vertical1 = { spanFunc ->
-            ListContentData(
-                count = vertItems.size,
-                span = { index ->
-                    val nodeData = getNodeData(vertItems, index)
-                    spanFunc(nodeData)
-                },
-            ) { index ->
-                itemComposable(vertItems, index)
-            }
-        },
-        vertical2 = { spanFunc ->
-            ListContentData(
-                count = vertItems.size,
-                span = { index ->
-                    val nodeData = getNodeData(vertItems, index)
-                    spanFunc(nodeData)
-                },
-            ) { index ->
-                itemComposable(vertItems, index)
-            }
-        },
-        horizontal1 = { spanFunc ->
-            ListContentData(
-                count = horizItems.size,
-                span = { index ->
-                    val nodeData = getNodeData(horizItems, index)
-                    spanFunc(nodeData)
-                },
-            ) { index ->
-                itemComposable(horizItems, index)
-            }
-        },
-        horizontal2 = { spanFunc ->
-            ListContentData(
-                count = horizItems.size,
-                span = { index ->
-                    val nodeData = getNodeData(horizItems, index)
-                    spanFunc(nodeData)
-                },
-            ) { index ->
-                itemComposable(horizItems, index)
-            }
-        },
-    )
 }
 
 // TEST Grid Preview Widget
