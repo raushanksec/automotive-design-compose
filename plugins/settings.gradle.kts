@@ -16,26 +16,40 @@
 
 rootProject.name = "DesignCompose Plugins"
 
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    includeBuild("../build-common")
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
+        gradlePluginPortal()
         mavenCentral()
     }
     versionCatalogs { create("libs") { from(files("../gradle/libs.versions.toml")) } }
 }
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        google()
-    }
-    includeBuild("../build-common")
-}
+
 
 
 include("cargo-plugin")
-
-include("gradle-plugin")
-
+//
+//include("gradle-plugin")
+//
 include("build-logic")
+//    dependencySubstitution {
+//        substitute(module("com.android.designcompose:build-common")).using(project(":"))
+//    }
+//}

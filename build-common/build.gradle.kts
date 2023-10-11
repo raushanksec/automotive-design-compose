@@ -18,14 +18,10 @@ plugins {
     `kotlin-dsl`
 }
 
-
 dependencies {
-//    implementation(libs.android.gradlePlugin)
-//    implementation(libs.dokka.gradlePlugin)
     implementation(libs.kotlin.gradlePlugin)
     implementation(libs.ktfmt.gradlePlugin)
-//    implementation(libs.ksp.gradlePlugin)
-//    implementation(libs.android.gms.strictVersionMatcher)
+   implementation(libs.android.gms.strictVersionMatcher)
     // Allows the precompiled scripts to access our local directory, specifically to
     // Access the version catalog
 //    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))

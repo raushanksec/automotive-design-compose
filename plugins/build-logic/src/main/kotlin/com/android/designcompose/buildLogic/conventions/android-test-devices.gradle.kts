@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package designcompose.conventions
+package com.android.designcompose.buildLogic.conventions
 
 apply<ATDPlugin>()
 

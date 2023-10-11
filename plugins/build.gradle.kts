@@ -27,8 +27,8 @@
 //}
 
 plugins {
-    kotlin("jvm")
-    alias(libs.plugins.ktfmt)
-    id("com.android.designcompose.buildCommon.base") }
+    alias(libs.plugins.kotlinJvm) apply false
+    alias(libs.plugins.ktfmt) apply false
+    id("com.android.designcompose.buildCommon.base") apply false
+}
 
-println("version ${project.version}")

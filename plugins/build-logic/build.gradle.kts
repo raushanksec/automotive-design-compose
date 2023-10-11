@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-    versionCatalogs { create("libs") { from(files("../gradle/libs.versions.toml")) } }
+plugins {
+    `kotlin-dsl`
+    id("com.android.designcompose.buildCommon.base")
 }
 
-plugins {
-    // Downloads the required Java Toolchain, if needed.
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.7.0"
+
+dependencies {
+    implementation(libs.android.gradlePlugin)
+    implementation(libs.dokka.gradlePlugin)
+    implementation(libs.kotlin.gradlePlugin)
+    implementation(libs.ksp.gradlePlugin)
+
+    // Allows the precompiled scripts to access our local directory, specifically to
+    // Access the version catalog
 }
+//implementation(libs.android.gradlePlugin)

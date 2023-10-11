@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.android.designcompose.buildCommon.publish
+package com.android.designcompose.buildLogic.publish
 
 plugins {
+    `maven-publish`
     kotlin("android")
     id("com.android.library")
     id("org.jetbrains.dokka")
-    id("com.android.designcompose.buildCommon.publish.common")
 }
+
 
 android {
     publishing {

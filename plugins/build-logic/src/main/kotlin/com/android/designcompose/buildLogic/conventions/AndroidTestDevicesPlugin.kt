@@ -16,7 +16,7 @@
 
 @file:Suppress("UnstableApiUsage")
 
-package designcompose.conventions
+package com.android.designcompose.buildLogic.conventions
 
 import com.android.build.api.dsl.ManagedDevices
 import com.android.build.api.dsl.ManagedVirtualDevice
