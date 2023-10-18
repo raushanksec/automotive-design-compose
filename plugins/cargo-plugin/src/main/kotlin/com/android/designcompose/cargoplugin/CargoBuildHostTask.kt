@@ -18,7 +18,7 @@ abstract class CargoBuildHostTask  @Inject constructor(private val executor: Exe
         fs.copy {
             it.from(cargoTargetDir.get().dir(buildType.get().toString()))
             it.include("*.so")
-            it.into(outLibDir.get())
+            it.into(outLibDir)
         }
     }
 }

@@ -1,5 +1,3 @@
-import com.android.build.gradle.tasks.factory.AndroidUnitTest
-
 /*
  * Copyright 2023 Google LLC
  *
@@ -77,17 +75,49 @@ android {
     }
 
     packaging.resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
-    testOptions.unitTests.all{
-//        it.dependsOn(tasks.named(":designcompose:cargoBuildHostDebug"))
-        it.systemProperty("java.library.path", project(":designcompose").layout.buildDirectory.dir("intermediates/host_rust_libs/debug"))
-    }
 }
-//afterEvaluate {
+
+val hostLibs by
+    configurations.creating {
+        isCanBeConsumed = false
+        attributes {
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.NATIVE_RUNTIME))
+            attribute(
+                LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+                objects.named(LibraryElements::class.java, "hostLibs")
+            )
+        }
+    }
+
+//val hostLibsForTest =
+//    hostLibs.resolvedConfiguration.resolvedArtifacts.joinToString(" ") { it.file.absolutePath }
+//
+//println(hostLibsForTest)
+val hostLibsDir = layout.buildDirectory.dir("hostLibs")
+
+val copyHostLibs by tasks.registering(Copy::class){
+    from(provider{hostLibs.filter{
+        name.contains(".so")
+    }
+        })
+    into(hostLibsDir)
+
+}
+
+android { testOptions.unitTests.all { it.systemProperty("java.library.path", hostLibsDir) } }
+
+afterEvaluate {
+    println(hostLibs.dependencies.buildDependencies.toString())
+    println(hostLibs.resolvedConfiguration.resolvedArtifacts.first().file)
+    println(hostLibs.artifacts.files.files)
+}
+// afterEvaluate {
 //    tasks.named("testDebugUnitTest") {
 //        dependsOn(tasks.named(":designcompose:cargoBuildHostDebug"))
 //    }
-//}
-
+// }
 
 dependencies {
     implementation(project(":designcompose"))
@@ -110,8 +140,12 @@ dependencies {
     testImplementation(libs.roborazzi.junit)
     testImplementation(libs.androidx.test.espresso.core)
     testImplementation(libs.androidx.compose.ui.test.junit4)
-    testImplementation(project(mapOf("path" to ":designcompose", "configuration" to "hostLibs")))
+    //    testImplementation(project(mapOf("path" to ":designcompose", "configuration" to
+    // "hostLibs")))
+    hostLibs(project(":designcompose"))
 
+    //
+    // testRuntimeOnly(files("../designcompose/build/intermediates/host_rust_libs/debug/libjni.so"))
 
     androidTestImplementation(kotlin("test"))
     androidTestImplementation(platform(libs.androidx.compose.bom))

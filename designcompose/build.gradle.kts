@@ -76,6 +76,13 @@ cargo {
     abi.add("arm64-v8a")
 }
 
+afterEvaluate {
+    println(configurations.named("hostLibs").get().allArtifacts.files.files)
+}
+
+afterEvaluate {
+    println(tasks.named("cargoBuildHostDebug").get().outputs.files.files) }
+
 dependencies {
     // Our code
     api(project(":common"))
