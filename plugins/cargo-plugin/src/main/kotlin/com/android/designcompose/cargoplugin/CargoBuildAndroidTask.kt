@@ -44,8 +44,8 @@ import org.gradle.process.ExecOperations
  * @property outLibDir Where the libraries will be copied to. Actually set by the Android plugin
  */
 
-abstract class CargoAndroidBuildTask @Inject constructor(private val executor: ExecOperations) :
-    BaseCargoBuildTask() {
+abstract class CargoBuildAndroidTask @Inject constructor(private val executor: ExecOperations) :
+    CargoBuildBaseTask() {
 
     @get:PathSensitive(PathSensitivity.ABSOLUTE)
     @get:InputDirectory

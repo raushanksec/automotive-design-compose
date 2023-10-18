@@ -18,12 +18,10 @@ package com.android.designcompose.cargoplugin
 
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.LibraryVariant
-import com.android.build.gradle.tasks.factory.AndroidUnitTest
 import com.android.builder.model.PROPERTY_BUILD_ABI
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
@@ -38,8 +36,6 @@ import org.gradle.api.tasks.TaskProvider
 class CargoPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val cargoExtension = project.initializeExtension()
-
-
         // Filter the ABIs using configurable Gradle properties
         val activeAbis = getActiveAbis(cargoExtension.abi, project)
 
@@ -52,33 +48,50 @@ class CargoPlugin : Plugin<Project> {
                 )
         }
 
-        val cargoDebugHostTask = project.registerHostCargoTask(cargoExtension, CargoBuildType.DEBUG)
-        val cargoReleaseHostTask =
-            project.registerHostCargoTask(cargoExtension, CargoBuildType.RELEASE)
 
-        project.tasks.withType(AndroidUnitTest::class.java) {
-            if (it.debug) it.dependsOn(cargoDebugHostTask)
-            else it.dependsOn(cargoReleaseHostTask)
-        }
+
+//        project.tasks.withType(AndroidUnitTest::class.java) {
+//            if (it.debug) it.dependsOn(cargoDebugHostTask)
+//            else it.dependsOn(cargoReleaseHostTask)
+//        }
     }
 
     private fun LibraryAndroidComponentsExtension.configureCargoPlugin(
-        project: Project,
-        cargoExtension: CargoPluginExtension,
-        activeAbis: Provider<Set<String>>
+        project: Project, cargoExtension: CargoPluginExtension, activeAbis: Provider<Set<String>>
     ) {
         val ndkDir = this.findNdkDirectory(project)
 
-        finalizeDsl { dsl ->
-            dsl.testOptions.unitTests.all { testConfig ->
-                testConfig.systemProperty(
-                    "java.library.path",
-                    cargoExtension.hostLibsOut.dir(if (testConfig.debug) "debug" else "release")
-                        .get()
-                        .toString()
-                )
+        val cargoDebugHostTask = project.registerHostCargoTask(cargoExtension, CargoBuildType.DEBUG)
+        val cargoReleaseHostTask =
+            project.registerHostCargoTask(cargoExtension, CargoBuildType.RELEASE)
+        project.configurations.create("hostLibs") {
+            it.isCanBeConsumed = true
+            it.isCanBeResolved = false
+        }
+        project.artifacts {artifacts ->
+            artifacts.add("hostLibs", cargoDebugHostTask.get().outLibDir){
+                it.builtBy(cargoDebugHostTask)
             }
         }
+
+        finalizeDsl { dsl ->
+            dsl.testOptions.unitTests.all { testTask ->
+
+
+                val buildType =
+                    if (testTask.name.contains("debug", ignoreCase = true)) CargoBuildType.DEBUG else CargoBuildType.RELEASE
+                val cargoBuildTask = if(buildType == CargoBuildType.DEBUG) cargoDebugHostTask else cargoReleaseHostTask
+
+                testTask.systemProperty(
+                    "java.library.path", cargoExtension.hostLibsOut.dir(
+                        buildType.toString()
+                    ).get().toString()
+                )
+                testTask.dependsOn(cargoBuildTask)
+            }
+        }
+
+
 
         // Create one task per variant and ABI
         onVariants { variant ->
@@ -105,13 +118,13 @@ class CargoPlugin : Plugin<Project> {
      * @param project The full project
      */
     private fun addDependencyOnTask(
-        variant: LibraryVariant, cargoTask: TaskProvider<CargoAndroidBuildTask>, project: Project
+        variant: LibraryVariant, cargoTask: TaskProvider<CargoBuildAndroidTask>, project: Project
     ) {
         with(variant.sources.jniLibs) {
             if (this != null) {
                 // Add the result to the variant's JNILibs sources. This is all we need to
                 // do to make sure the JNILibs are compiled and included in the library
-                this.addGeneratedSourceDirectory(cargoTask, CargoAndroidBuildTask::outLibDir)
+                this.addGeneratedSourceDirectory(cargoTask, CargoBuildAndroidTask::outLibDir)
             } else project.logger.error(
                 "No JniLibs configured by Android Gradle Plugin, Cargo tasks may not run"
             )
@@ -156,10 +169,8 @@ class CargoPlugin : Plugin<Project> {
         val ndkDir = project.objects.directoryProperty()
 
         finalizeDsl { androidDsl ->
-            // For now the ndkVersion must be specified in the android block of the project.
-            //
             val ndkVersion =
-                androidDsl.ndkVersion ?: throw GradleException("android.ndkVersion must be set!")
+                androidDsl.ndkVersion
             // https://blog.rust-lang.org/2023/01/09/android-ndk-update-r25.html
             if (ndkVersion.substringBefore(".")
                     .toInt() < 25

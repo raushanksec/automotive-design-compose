@@ -4,8 +4,8 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
-abstract class HostCargoBuildTask  @Inject constructor(private val executor: ExecOperations) :
-    BaseCargoBuildTask() {
+abstract class CargoBuildHostTask  @Inject constructor(private val executor: ExecOperations) :
+    CargoBuildBaseTask() {
 
 
     @TaskAction fun runCommand() {
@@ -18,7 +18,7 @@ abstract class HostCargoBuildTask  @Inject constructor(private val executor: Exe
         fs.copy {
             it.from(cargoTargetDir.get().dir(buildType.get().toString()))
             it.include("*.so")
-            it.into(outLibDir.get().dir(buildType.get().toString()))
+            it.into(outLibDir.get())
         }
     }
 }

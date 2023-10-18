@@ -29,7 +29,7 @@ enum class CargoBuildType {
     because =
     "Cargo has it's own up-to-date checks. Trying to reproduce them so that we don't need to run Cargo is infeasible, and any errors will cause out-of-date code to be included"
 )
-abstract class BaseCargoBuildTask : DefaultTask() {
+abstract class CargoBuildBaseTask : DefaultTask() {
     @get:Inject
     abstract val fs: FileSystemOperations
 

@@ -25,6 +25,7 @@ plugins {
     id("designcompose.conventions.base")
     id("designcompose.conventions.publish.android")
     id("designcompose.conventions.android-test-devices")
+    id("designcompose.conventions.roborazzi")
 }
 
 @Suppress("UnstableApiUsage")
@@ -101,6 +102,14 @@ dependencies {
     implementation(libs.guavaAndroid)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    testImplementation(libs.robolectric)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.junit)
+    testImplementation(libs.androidx.test.espresso.core)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
 
     androidTestImplementation(kotlin("test"))
     androidTestImplementation(libs.google.truth)

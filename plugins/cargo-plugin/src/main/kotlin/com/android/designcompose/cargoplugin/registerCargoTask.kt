@@ -24,9 +24,9 @@ fun Project.registerAndroidCargoTask(
     compileApi: Int,
     abi: String,
     ndkDir: Provider<Directory>
-): TaskProvider<CargoAndroidBuildTask> = tasks.register(
+): TaskProvider<CargoBuildAndroidTask> = tasks.register(
     "cargoBuild${abi.capitalized()}${buildType.toString().capitalized()}",
-    CargoAndroidBuildTask::class.java
+    CargoBuildAndroidTask::class.java
 ) { task ->
     task.applyCommonCargoConfig(cargoExtension, this, buildType)
     task.androidAbi.set(abi)
@@ -36,14 +36,14 @@ fun Project.registerAndroidCargoTask(
 
 fun Project.registerHostCargoTask(
     cargoExtension: CargoPluginExtension, buildType: CargoBuildType
-): TaskProvider<HostCargoBuildTask> = tasks.register(
-    "cargoBuildHost${buildType.toString().capitalized()}", HostCargoBuildTask::class.java
+): TaskProvider<CargoBuildHostTask> = tasks.register(
+    "cargoBuildHost${buildType.toString().capitalized()}", CargoBuildHostTask::class.java
 ) { task ->
     task.applyCommonCargoConfig(cargoExtension, this, buildType)
     task.outLibDir.set(cargoExtension.hostLibsOut.dir(buildType.toString()))
 }
 
-private fun BaseCargoBuildTask.applyCommonCargoConfig(
+private fun CargoBuildBaseTask.applyCommonCargoConfig(
     cargoExtension: CargoPluginExtension, project: Project, theBuildType: CargoBuildType
 ) {
     // Set the cargoBinary location from the configured plugin extension, or default to

@@ -1,3 +1,5 @@
+import com.android.build.gradle.tasks.factory.AndroidUnitTest
+
 /*
  * Copyright 2023 Google LLC
  *
@@ -75,7 +77,17 @@ android {
     }
 
     packaging.resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+    testOptions.unitTests.all{
+//        it.dependsOn(tasks.named(":designcompose:cargoBuildHostDebug"))
+        it.systemProperty("java.library.path", project(":designcompose").layout.buildDirectory.dir("intermediates/host_rust_libs/debug"))
+    }
 }
+//afterEvaluate {
+//    tasks.named("testDebugUnitTest") {
+//        dependsOn(tasks.named(":designcompose:cargoBuildHostDebug"))
+//    }
+//}
+
 
 dependencies {
     implementation(project(":designcompose"))
@@ -98,6 +110,8 @@ dependencies {
     testImplementation(libs.roborazzi.junit)
     testImplementation(libs.androidx.test.espresso.core)
     testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(project(mapOf("path" to ":designcompose", "configuration" to "hostLibs")))
+
 
     androidTestImplementation(kotlin("test"))
     androidTestImplementation(platform(libs.androidx.compose.bom))
