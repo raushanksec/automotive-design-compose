@@ -112,7 +112,7 @@ enum class GridItemType {
 }
 
 @Composable
-@Preview(device = "spec:width=2000px,height=2340px,dpi=440")
+@Preview(device = "spec:width=3000px,height=3000px,dpi=440")
 fun GridLayoutTest() {
     val vertItems: ArrayList<Pair<GridItemType, String>> = arrayListOf()
     for (i in 1..20) vertItems.add(Pair(GridItemType.RowGrid, "Item $i"))

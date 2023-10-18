@@ -26,6 +26,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -438,68 +440,77 @@ internal fun DesignFrame(
                 val columnCount = calculateColumnRowCount(layoutInfo, gridMainAxisSize)
                 val horizontalSpacing =
                     if (layoutInfo.mainAxisSpacing is ItemSpacing.Fixed)
-                        layoutInfo.mainAxisSpacing.value
-                    else 0
+                        Arrangement.spacedBy(layoutInfo.mainAxisSpacing.value.dp)
+                    else Arrangement.SpaceEvenly
                 val verticalSpacing = layoutInfo.crossAxisSpacing
 
-                LazyVerticalGrid(
-                    modifier = layoutInfo.selfModifier.then(m),
-                    columns =
-                        object : GridCells {
-                            override fun Density.calculateCrossAxisCellSizes(
-                                availableSize: Int,
-                                spacing: Int,
-                            ): List<Int> {
-                                val mainAxisSize = (availableSize.toFloat() / density).toInt()
-                                setGridMainAxisSize(mainAxisSize)
-                                return calculateCellsCrossAxisSizeImpl(
-                                    availableSize,
-                                    columnCount,
-                                    spacing
-                                )
-                            }
-                        },
-                    horizontalArrangement =
-                        object : Arrangement.Horizontal {
-                            var customSpacing: Int = horizontalSpacing
-                            init {
-                                if (layoutInfo.mainAxisSpacing is ItemSpacing.Fixed) {
-                                    customSpacing = layoutInfo.mainAxisSpacing.value
-                                } else if (layoutInfo.mainAxisSpacing is ItemSpacing.Auto) {
-                                    customSpacing =
-                                        if (columnCount > 1)
-                                            (gridMainAxisSize -
-                                                (layoutInfo.mainAxisSpacing.field1 * columnCount)) /
-                                                (columnCount - 1)
-                                        else layoutInfo.mainAxisSpacing.field0
-                                }
-                            }
-                            override fun Density.arrange(
-                                totalSize: Int,
-                                sizes: IntArray,
-                                layoutDirection: LayoutDirection,
-                                outPositions: IntArray,
-                            ) {
-                                // Apparently this function does not get called
-                                println(
-                                    "horizontalArrangement arrange() totalSize $totalSize " +
-                                        "sizes $sizes layout $layoutDirection out $outPositions"
-                                )
-                            }
-                            override val spacing = customSpacing.dp
-                        },
-                    verticalArrangement = Arrangement.spacedBy(verticalSpacing.dp),
-                    userScrollEnabled = layoutInfo.scrollingEnabled,
-                    contentPadding =
-                        PaddingValues(
-                            layoutInfo.padding.start.pointsAsDp(),
-                            layoutInfo.padding.top.pointsAsDp(),
-                            layoutInfo.padding.end.pointsAsDp(),
-                            layoutInfo.padding.bottom.pointsAsDp(),
-                        ),
-                ) {
-                    lazyItemContent()
-                }
+                LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Fixed(columnCount),
+                    verticalItemSpacing = layoutInfo.crossAxisSpacing.dp,
+                    horizontalArrangement = horizontalSpacing,
+                    content =  {
+                        items(lazyContent) {content ->
+
+                        }
+                })
+//
+//                LazyVerticalGrid(
+//                    modifier = layoutInfo.selfModifier.then(m),
+//                    columns =
+//                        object : GridCells {
+//                            override fun Density.calculateCrossAxisCellSizes(
+//                                availableSize: Int,
+//                                spacing: Int,
+//                            ): List<Int> {
+//                                val mainAxisSize = (availableSize.toFloat() / density).toInt()
+//                                setGridMainAxisSize(mainAxisSize)
+//                                return calculateCellsCrossAxisSizeImpl(
+//                                    availableSize,
+//                                    columnCount,
+//                                    spacing
+//                                )
+//                            }
+//                        },
+//                    horizontalArrangement =
+//                        object : Arrangement.Horizontal {
+//                            var customSpacing: Int = horizontalSpacing
+//                            init {
+//                                if (layoutInfo.mainAxisSpacing is ItemSpacing.Fixed) {
+//                                    customSpacing = layoutInfo.mainAxisSpacing.value
+//                                } else if (layoutInfo.mainAxisSpacing is ItemSpacing.Auto) {
+//                                    customSpacing =
+//                                        if (columnCount > 1)
+//                                            (gridMainAxisSize -
+//                                                (layoutInfo.mainAxisSpacing.field1 * columnCount)) /
+//                                                (columnCount - 1)
+//                                        else layoutInfo.mainAxisSpacing.field0
+//                                }
+//                            }
+//                            override fun Density.arrange(
+//                                totalSize: Int,
+//                                sizes: IntArray,
+//                                layoutDirection: LayoutDirection,
+//                                outPositions: IntArray,
+//                            ) {
+//                                // Apparently this function does not get called
+//                                println(
+//                                    "horizontalArrangement arrange() totalSize $totalSize " +
+//                                        "sizes $sizes layout $layoutDirection out $outPositions"
+//                                )
+//                            }
+//                            override val spacing = customSpacing.dp
+//                        },
+//                    verticalArrangement = Arrangement.spacedBy(verticalSpacing.dp),
+//                    userScrollEnabled = layoutInfo.scrollingEnabled,
+//                    contentPadding =
+//                        PaddingValues(
+//                            layoutInfo.padding.start.pointsAsDp(),
+//                            layoutInfo.padding.top.pointsAsDp(),
+//                            layoutInfo.padding.end.pointsAsDp(),
+//                            layoutInfo.padding.bottom.pointsAsDp(),
+//                        ),
+//                ) {
+//                    lazyItemContent()
+//                }
             } else {
                 val rowCount = calculateColumnRowCount(layoutInfo, gridMainAxisSize)
                 val horizontalSpacing = layoutInfo.crossAxisSpacing
