@@ -91,28 +91,50 @@ val hostLibs by
         }
     }
 
-//val hostLibsForTest =
+// val hostLibsForTest =
 //    hostLibs.resolvedConfiguration.resolvedArtifacts.joinToString(" ") { it.file.absolutePath }
 //
-//println(hostLibsForTest)
+// println(hostLibsForTest)
 val hostLibsDir = layout.buildDirectory.dir("hostLibs")
+println("hostLibsDir ${hostLibsDir.get()}")
+//
+val copyHostLibs by
+    tasks.registering(Copy::class) {
+        from(
+            hostLibs)
+//                println("Filecollection ${it.files.toString()}")
+//            }
+////            provider {
+////                hostLibs.resolvedConfiguration.resolvedArtifacts.first().file
+//////                    .also {
+//////                    println("copyhostlibs: ${it}")
+//////                }
+////            }
+//        )
+        eachFile{
+            println("copying file $sourceName")
+        }
+        into(hostLibsDir)
+////        this.dependsOn(hostLibs.getTaskDependencyFrodmProjectDependency())
+//        doLast{
+//            println("haaaaloo")
+//            println("DoLast: ${this.outputs.files.files}")
+        }
+//    }
 
-val copyHostLibs by tasks.registering(Copy::class){
-    from(provider{hostLibs.filter{
-        name.contains(".so")
+android {
+    testOptions.unitTests.all {
+        it.systemProperty("java.library.path", hostLibsDir.get().toString())
+//        it.systemProperty("java.library.path", hostLibs.fileCollection().singleFile.absolutePath)
+        it.dependsOn(copyHostLibs)
     }
-        })
-    into(hostLibsDir)
-
 }
 
-android { testOptions.unitTests.all { it.systemProperty("java.library.path", hostLibsDir) } }
-
-afterEvaluate {
-    println(hostLibs.dependencies.buildDependencies.toString())
-    println(hostLibs.resolvedConfiguration.resolvedArtifacts.first().file)
-    println(hostLibs.artifacts.files.files)
-}
+//afterEvaluate {
+//    println(hostLibs.dependencies.buildDependencies.toString())
+//    println(hostLibs.resolvedConfiguration.resolvedArtifacts.first().file)
+//    println(hostLibs.artifacts.files.files)
+//}
 // afterEvaluate {
 //    tasks.named("testDebugUnitTest") {
 //        dependsOn(tasks.named(":designcompose:cargoBuildHostDebug"))

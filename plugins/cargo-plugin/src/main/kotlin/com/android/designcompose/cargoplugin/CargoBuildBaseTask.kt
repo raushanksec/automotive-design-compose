@@ -48,8 +48,7 @@ abstract class CargoBuildBaseTask : DefaultTask() {
 
     @get:Input abstract val buildType: Property<CargoBuildType>
 
-//    @get:OutputDirectory
-    @get:Internal
+    @get:OutputDirectory
     abstract val outLibDir: DirectoryProperty
 
     @get:OutputFile abstract val outputFile: RegularFileProperty
@@ -69,8 +68,9 @@ abstract class CargoBuildBaseTask : DefaultTask() {
                 project.providers.systemProperty("user.home").map { File(it, ".cargo/bin/cargo") }
             )
         )
-
-        rustSrcs.from(cargoExtension.crateDir).filterNot { file -> file.name == "target" }
+        rustSrcs.setFrom(cargoExtension.crateDir.filter{
+            !it.asFile.path.startsWith("target")
+        })
 
         hostOS.set(
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -91,7 +91,7 @@ abstract class CargoBuildBaseTask : DefaultTask() {
         cargoTargetDir.set(
             project.layout.buildDirectory.map { it.dir("intermediates/cargoTarget") }
         )
-        outputFile.set(outLibDir.map { it.file("libjni.so") })
+        outputFile.set(outLibDir.flatMap { project.provider{it.file("libjni.so") }})
 
         group = "build"
         // Try to get the cargo build started earlier in the build execution.

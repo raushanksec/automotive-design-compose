@@ -56,16 +56,17 @@ class CargoPlugin : Plugin<Project> {
                 // Add MachineArchitecture and OS attributes
             }
         }
-//        project.afterEvaluate {
             val cargoDebugHostTask =
                 project.registerHostCargoTask(cargoExtension, CargoBuildType.DEBUG)
             val cargoReleaseHostTask =
                 project.registerHostCargoTask(cargoExtension, CargoBuildType.RELEASE)
 
+//        project.afterEvaluate {
             project.artifacts { artifacts ->
-                artifacts.add("hostLibs", cargoDebugHostTask)
+                artifacts.add("hostLibs", cargoDebugHostTask.get().outputFile){
+                    it.builtBy(cargoDebugHostTask)
+                }
             }
-        println("hello")
 //        }
 
         // withPlugin(String) will do the action once the plugin is applied, or immediately

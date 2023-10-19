@@ -77,11 +77,12 @@ cargo {
 }
 
 afterEvaluate {
-    println(configurations.named("hostLibs").get().allArtifacts.files.files)
+    println("outputFile: ${tasks.named("cargoBuildHostDebug").get().outputs.files.files}")
+    println("hostlibs artifacts: ${configurations.named("hostLibs").get().allArtifacts.files.files}")
 }
 
-afterEvaluate {
-    println(tasks.named("cargoBuildHostDebug").get().outputs.files.files) }
+//afterEvaluate {
+//    println(tasks.named("cargoBuildHostDebug").get().outputs.files.files) }
 
 dependencies {
     // Our code

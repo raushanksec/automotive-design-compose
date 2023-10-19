@@ -42,10 +42,6 @@ fun Project.registerHostCargoTask(
 
     return tasks.register(taskName, CargoBuildHostTask::class.java) { task ->
         task.applyCommonCargoConfig(cargoExtension, this, buildType)
-        task.outputFile.set(
-            cargoExtension.hostLibsOut.dir(buildType.toString()).map { it.file("libjni.so") }
-        )
-        //        task.outLibDir.set(cargoExtension.hostLibsOut.dir(buildType.toString()))
-        //        task.outputFile.set(layout.projectDirectory.file("build.gradle.kts"))
+        task.outLibDir.set(cargoExtension.hostLibsOut.dir(buildType.toString()))
     }
 }
