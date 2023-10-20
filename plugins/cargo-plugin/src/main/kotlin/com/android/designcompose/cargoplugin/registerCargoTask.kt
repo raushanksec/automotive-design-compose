@@ -34,14 +34,21 @@ fun Project.registerAndroidCargoTask(
         task.compileApi.set(compileApi)
     }
 
+fun makeHostCargoBuildTaskName(buildType: CargoBuildType) ="$cargoBuildHostTaskBaseName${buildType.toString().capitalized()}"
+fun makeHostCargoOutputDir(
+    cargoExtension: CargoPluginExtension,
+    buildType: CargoBuildType
+): Provider<Directory> =
+    cargoExtension.hostLibsOut.dir(buildType.toString())
+
 fun Project.registerHostCargoTask(
     cargoExtension: CargoPluginExtension,
     buildType: CargoBuildType
 ): TaskProvider<CargoBuildHostTask> {
-    val taskName = "$cargoBuildHostTaskBaseName${buildType.toString().capitalized()}"
 
-    return tasks.register(taskName, CargoBuildHostTask::class.java) { task ->
+    return tasks.register(makeHostCargoBuildTaskName(buildType), CargoBuildHostTask::class.java) { task ->
         task.applyCommonCargoConfig(cargoExtension, this, buildType)
-        task.outLibDir.set(cargoExtension.hostLibsOut.dir(buildType.toString()))
+        task.outLibDir.set(makeHostCargoOutputDir(cargoExtension, buildType))
     }
 }
+

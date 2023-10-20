@@ -89,6 +89,7 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha04")
 
     testImplementation(kotlin("test"))
     testImplementation(libs.google.truth)

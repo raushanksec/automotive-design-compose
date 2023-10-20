@@ -91,45 +91,29 @@ val hostLibs by
         }
     }
 
-// val hostLibsForTest =
-//    hostLibs.resolvedConfiguration.resolvedArtifacts.joinToString(" ") { it.file.absolutePath }
+
+//val hostLibsDir = layout.buildDirectory.dir("hostLibs")
+//println("hostLibsDir ${hostLibsDir.get()}")
+//val copyHostLibs by
+//    tasks.registering(Copy::class) {
+//        from(
+//            hostLibs)
 //
-// println(hostLibsForTest)
-val hostLibsDir = layout.buildDirectory.dir("hostLibs")
-println("hostLibsDir ${hostLibsDir.get()}")
+//        eachFile{
+//            println("copying file $sourceName")
+//        }
+//        into(hostLibsDir)
 //
-val copyHostLibs by
-    tasks.registering(Copy::class) {
-        from(
-            hostLibs)
-//                println("Filecollection ${it.files.toString()}")
-//            }
-////            provider {
-////                hostLibs.resolvedConfiguration.resolvedArtifacts.first().file
-//////                    .also {
-//////                    println("copyhostlibs: ${it}")
-//////                }
-////            }
-//        )
-        eachFile{
-            println("copying file $sourceName")
-        }
-        into(hostLibsDir)
-////        this.dependsOn(hostLibs.getTaskDependencyFrodmProjectDependency())
-//        doLast{
-//            println("haaaaloo")
-//            println("DoLast: ${this.outputs.files.files}")
-        }
+//        }
+//
+//android {
+//    testOptions.unitTests.all {
+//        it.systemProperty("java.library.path", hostLibsDir.get().toString())
+////        it.systemProperty("java.library.path", hostLibs.fileCollection().singleFile.absolutePath)
+//        it.dependsOn(copyHostLibs)
 //    }
-
-android {
-    testOptions.unitTests.all {
-        it.systemProperty("java.library.path", hostLibsDir.get().toString())
-//        it.systemProperty("java.library.path", hostLibs.fileCollection().singleFile.absolutePath)
-        it.dependsOn(copyHostLibs)
-    }
-}
-
+//}
+//
 //afterEvaluate {
 //    println(hostLibs.dependencies.buildDependencies.toString())
 //    println(hostLibs.resolvedConfiguration.resolvedArtifacts.first().file)

@@ -16,22 +16,27 @@
 
 package com.android.designcompose.cargoplugin
 
+import com.android.build.api.attributes.BuildTypeAttr
+import com.android.build.api.variant.Component
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.LibraryVariant
+import com.android.build.gradle.tasks.factory.AndroidUnitTest
 import com.android.builder.model.PROPERTY_BUILD_ABI
 import org.gradle.api.GradleException
 import org.gradle.api.Named
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.attributes.Bundling
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
 import org.gradle.api.attributes.Usage
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.configurationcache.extensions.capitalized
-inline fun <reified T : Named> Project.namedAttribute(value: String) = objects.named(T::class.java, value)
+
+inline fun <reified T : Named> Project.namedAttribute(value: String) =
+    objects.named(T::class.java, value)
 
 /**
  * Cargo plugin
@@ -46,28 +51,16 @@ class CargoPlugin : Plugin<Project> {
         // Filter the ABIs using configurable Gradle properties
         val activeAbis = getActiveAbis(cargoExtension.abi, project)
 
-        project.configurations.create("hostLibs") {
-            it.isCanBeConsumed = true
-            it.isCanBeResolved = false
-            it.attributes {attr ->
-                attr.attribute(Category.CATEGORY_ATTRIBUTE,project.namedAttribute(Category.LIBRARY))
-                attr.attribute(Usage.USAGE_ATTRIBUTE, project.namedAttribute(Usage.NATIVE_RUNTIME))
-                attr.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.namedAttribute("hostLibs"))
-                // Add MachineArchitecture and OS attributes
-            }
-        }
-            val cargoDebugHostTask =
-                project.registerHostCargoTask(cargoExtension, CargoBuildType.DEBUG)
-            val cargoReleaseHostTask =
-                project.registerHostCargoTask(cargoExtension, CargoBuildType.RELEASE)
-
-//        project.afterEvaluate {
-            project.artifacts { artifacts ->
-                artifacts.add("hostLibs", cargoDebugHostTask.get().outputFile){
-                    it.builtBy(cargoDebugHostTask)
-                }
-            }
-//        }
+        //        project.createConfiguration()
+        //            val cargoDebugHostTask =
+        //                project.registerHostCargoTask(cargoExtension, CargoBuildType.DEBUG)
+        //
+        //
+        //            project.artifacts { artifacts ->
+        //                artifacts.add("hostLibs", cargoDebugHostTask.get().outputFile){
+        //                    it.builtBy(cargoDebugHostTask)
+        //                }
+        //            }
 
         // withPlugin(String) will do the action once the plugin is applied, or immediately
         // if the plugin is already applied
@@ -82,6 +75,30 @@ class CargoPlugin : Plugin<Project> {
         }
     }
 
+    private fun Project.registerHostCargoConfig(
+        component: Component
+    ): NamedDomainObjectProvider<Configuration> {
+        return configurations.register("${component.name}JNIHost") {
+            it.isCanBeConsumed = true
+            it.isCanBeResolved = false
+            it.attributes { attr ->
+                attr.attribute(Category.CATEGORY_ATTRIBUTE, namedAttribute(Category.LIBRARY))
+                attr.attribute(Usage.USAGE_ATTRIBUTE, namedAttribute(Usage.NATIVE_RUNTIME))
+                attr.attribute(
+                    LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+                    namedAttribute("hostLibs")
+                )
+                attr.attribute(
+                    BuildTypeAttr.ATTRIBUTE,
+                    component.runtimeConfiguration.attributes.getAttribute(
+                        BuildTypeAttr.ATTRIBUTE
+                    )!!
+                )
+                // Add MachineArchitecture and OS attributes
+            }
+        }
+    }
+
     private fun LibraryAndroidComponentsExtension.configureCargoPlugin(
         project: Project,
         cargoExtension: CargoPluginExtension,
@@ -91,26 +108,86 @@ class CargoPlugin : Plugin<Project> {
 
         finalizeDsl { dsl ->
             dsl.testOptions.unitTests.all { testTask ->
-                val buildType =
-                    if (testTask.name.contains("debug", ignoreCase = true)) CargoBuildType.DEBUG
-                    else CargoBuildType.RELEASE
-
-                testTask.systemProperty(
-                    "java.library.path",
-                    cargoExtension.hostLibsOut.dir(buildType.toString()).get().toString()
-                )
-                testTask.dependsOn(
-                    project.tasks.named(
-                        "$cargoBuildHostTaskBaseName${buildType.toString().capitalized()}"
+                (testTask as? AndroidUnitTest)?.let {
+                    val buildType =
+                        it.variantName.removeSuffix("UnitTest").toCargoBuildType()
+                            ?: throw GradleException("Unknown buildType ${it.variantName}")
+                    testTask.dependsOn(project.tasks.named(makeHostCargoBuildTaskName(buildType)))
+                    testTask.systemProperty(
+                        "java.library.path",
+                        makeHostCargoOutputDir(cargoExtension, buildType)
                     )
-                )
+                }
             }
         }
+
+        //                        println(testTask::class.java)
+        //                        println(( testTask as? AndroidUnitTest?)?.variantName)
+        //                        val buildType = if(?.variantName?.removeSuffix("UnitTest")
+
+        //                val buildType =
+        //                    if (testTask.name.contains("debug", ignoreCase = true))
+        // CargoBuildType.DEBUG
+        //                    else CargoBuildType.RELEASE
+        //
+        //                testTask.systemProperty(
+        //                    "java.library.path",
+        //                    cargoExtension.hostLibsOut.dir(buildType.toString()).get().toString()
+        //                )
+        //                testTask.dependsOn(
+        //                    project.tasks.named(
+        //                        "$cargoBuildHostTaskBaseName${buildType.toString().capitalized()}"
+        //                    )
+        //                )
+        //        val cargoReleaseHostTask =
+        //            project.registerHostCargoTask(cargoExtension, CargoBuildType.RELEASE)
+        //        val cargoDebugHostTask =
+        //            project.registerHostCargoTask(cargoExtension, CargoBuildType.DEBUG)
 
         // Create one task per variant and ABI
         onVariants { variant ->
             val buildType =
                 if (variant.buildType == "release") CargoBuildType.RELEASE else CargoBuildType.DEBUG
+
+            println("Variant ${variant.name}")
+            variant.components.forEach {
+                println("${it.name}: ${it.runtimeConfiguration.attributes.toString()}")
+            }
+            variant.components
+                .filter { it.name.contains("unitTest", true) }
+                .forEach { component ->
+                    val nativeCargoTask = project.registerHostCargoTask(cargoExtension, buildType)
+
+                    val newConfig = project.registerHostCargoConfig(component)
+
+                    project.artifacts { artifacts ->
+                        artifacts.add(newConfig.name, nativeCargoTask.get().outputFile) {
+                            it.builtBy(nativeCargoTask)
+                        }
+                    }
+
+                    //
+                    // variant.sources.resources!!.addGeneratedSourceDirectory(nativeCargoTask,
+                    // CargoBuildHostTask::outLibDir)
+
+                    //                component.runtimeConfiguration.dependencies.add{
+                    //
+                    //                }
+                    //                project.artifacts.add(component.runtimeConfiguration, )
+                    //                component.runtimeConfiguration.dependencies.buildDependencies.
+
+                    //                component.artifacts.add(SingleArtifact.ASSETS,
+                    // nativeCargoTask.map { it.outputFile })
+                    //
+                    //
+                    // component.runtimeConfiguration.artifacts.add(project.configurations.named("hostlibs"),  nativeCargoTask.get().outputFile)
+                    ////
+                    // component.artifacts.add<SingleArtifact<RegularFile>(Artifact.FILE,
+                    // Artifact.Category.OUTPUTS)>(nativeCargoTask:)
+                    //
+                    //
+                }
+
             cargoExtension.abi.get().forEach { abi ->
                 val cargoTask =
                     project.registerAndroidCargoTask(
@@ -194,7 +271,10 @@ class CargoPlugin : Plugin<Project> {
 
         finalizeDsl { androidDsl ->
             val ndkVersion =
-                androidDsl.ndkVersion ?: throw GradleException("android.ndkVersion must be set!")            // https://blog.rust-lang.org/2023/01/09/android-ndk-update-r25.html
+                androidDsl.ndkVersion
+                    ?: throw GradleException(
+                        "android.ndkVersion must be set!"
+                    ) // https://blog.rust-lang.org/2023/01/09/android-ndk-update-r25.html
             if (ndkVersion.substringBefore(".").toInt() < 25)
                 throw GradleException("ndkVersion must be at least r25")
             ndkDir.set(sdkComponents.sdkDirectory.map { it.dir("ndk/$ndkVersion") })

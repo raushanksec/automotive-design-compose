@@ -6,7 +6,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileSystemOperations
-import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -29,6 +28,10 @@ enum class CargoBuildType {
     override fun toString() = if (this == RELEASE) "release" else "debug"
 }
 
+fun String.toCargoBuildType() =
+    if (this.compareTo("release", true) == 0) CargoBuildType.RELEASE
+    else if (this.compareTo("debug", true) == 0) CargoBuildType.DEBUG else null
+
 @UntrackedTask(
     because =
         "Cargo has it's own up-to-date checks. Trying to reproduce them so that we don't need to run Cargo is infeasible, and any errors will cause out-of-date code to be included"
@@ -48,8 +51,7 @@ abstract class CargoBuildBaseTask : DefaultTask() {
 
     @get:Input abstract val buildType: Property<CargoBuildType>
 
-    @get:OutputDirectory
-    abstract val outLibDir: DirectoryProperty
+    @get:OutputDirectory abstract val outLibDir: DirectoryProperty
 
     @get:OutputFile abstract val outputFile: RegularFileProperty
 
@@ -68,9 +70,7 @@ abstract class CargoBuildBaseTask : DefaultTask() {
                 project.providers.systemProperty("user.home").map { File(it, ".cargo/bin/cargo") }
             )
         )
-        rustSrcs.setFrom(cargoExtension.crateDir.filter{
-            !it.asFile.path.startsWith("target")
-        })
+        rustSrcs.setFrom(cargoExtension.crateDir.filter { !it.asFile.path.startsWith("target") })
 
         hostOS.set(
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -91,7 +91,7 @@ abstract class CargoBuildBaseTask : DefaultTask() {
         cargoTargetDir.set(
             project.layout.buildDirectory.map { it.dir("intermediates/cargoTarget") }
         )
-        outputFile.set(outLibDir.flatMap { project.provider{it.file("libjni.so") }})
+        outputFile.set(outLibDir.flatMap { project.provider { it.file("libjni.so") } })
 
         group = "build"
         // Try to get the cargo build started earlier in the build execution.

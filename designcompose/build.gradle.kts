@@ -76,10 +76,10 @@ cargo {
     abi.add("arm64-v8a")
 }
 
-afterEvaluate {
-    println("outputFile: ${tasks.named("cargoBuildHostDebug").get().outputs.files.files}")
-    println("hostlibs artifacts: ${configurations.named("hostLibs").get().allArtifacts.files.files}")
-}
+//afterEvaluate {
+//    println("outputFile: ${tasks.named("cargoBuildHostDebug").get().outputs.files.files}")
+//    println("hostlibs artifacts: ${configurations.named("hostLibs").get().allArtifacts.files.files}")
+//}
 
 //afterEvaluate {
 //    println(tasks.named("cargoBuildHostDebug").get().outputs.files.files) }
