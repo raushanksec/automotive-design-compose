@@ -77,6 +77,8 @@ internal object LayoutManager {
     private var nextLayoutId: Int = 0
     private var performLayoutComputation: Boolean = false
     private var density: Float = 1F
+    lateinit var jniInterface: JniInterface
+
 
     internal fun getNextLayoutId(): Int {
         return ++nextLayoutId
@@ -146,7 +148,7 @@ internal object LayoutManager {
         // Compute layout if this is the only node that changed
         val computeLayout = layoutsInProgress.isEmpty()
         val responseBytes =
-            Jni.jniAddTextNode(layoutId, parentLayoutId, childIndex, serializedView, computeLayout)
+            AndroidJni.jniAddTextNode(layoutId, parentLayoutId, childIndex, serializedView, computeLayout)
         handleResponse(responseBytes)
     }
 
@@ -170,7 +172,7 @@ internal object LayoutManager {
             serializedBaseView = variantSerializer._bytes.toUByteArray().asByteArray()
         }
         val responseBytes =
-            Jni.jniAddNode(
+            AndroidJni.jniAddNode(
                 layoutId,
                 parentLayoutId,
                 childIndex,
@@ -182,7 +184,7 @@ internal object LayoutManager {
 
     internal fun unsubscribe(layoutId: Int) {
         subscribers.remove(layoutId)
-        val responseBytes = Jni.jniRemoveNode(layoutId, performLayoutComputation)
+        val responseBytes = AndroidJni.jniRemoveNode(layoutId, performLayoutComputation)
         handleResponse(responseBytes)
     }
 
@@ -200,7 +202,7 @@ internal object LayoutManager {
         layoutsInProgress.remove(layoutId)
         if (layoutsInProgress.isEmpty()) {
             Log.d(TAG, "Finished layout $layoutId, computing layout")
-            val responseBytes = Jni.jniComputeLayout()
+            val responseBytes = AndroidJni.jniComputeLayout()
             handleResponse(responseBytes)
         }
     }
@@ -231,7 +233,7 @@ internal object LayoutManager {
 
     // Ask for the layout for the associated node via JNI
     internal fun getLayout(layoutId: Int): Layout? {
-        val layoutBytes = Jni.jniGetLayout(layoutId)
+        val layoutBytes = AndroidJni.jniGetLayout(layoutId)
         if (layoutBytes != null) {
             val deserializer = BincodeDeserializer(layoutBytes)
             return Layout.deserialize(deserializer)
@@ -244,7 +246,7 @@ internal object LayoutManager {
     internal fun setNodeSize(layoutId: Int, width: Int, height: Int) {
         val adjustedWidth = (width.toFloat() / density).roundToInt()
         val adjustedHeight = (height.toFloat() / density).roundToInt()
-        val responseBytes = Jni.jniSetNodeSize(layoutId, adjustedWidth, adjustedHeight)
+        val responseBytes = AndroidJni.jniSetNodeSize(layoutId, adjustedWidth, adjustedHeight)
         handleResponse(responseBytes)
     }
 

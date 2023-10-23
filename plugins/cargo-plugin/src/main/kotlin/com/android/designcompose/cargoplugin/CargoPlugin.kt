@@ -18,6 +18,7 @@ package com.android.designcompose.cargoplugin
 
 import com.android.build.api.attributes.BuildTypeAttr
 import com.android.build.api.variant.Component
+import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.LibraryVariant
 import com.android.build.gradle.tasks.factory.AndroidUnitTest
@@ -106,43 +107,24 @@ class CargoPlugin : Plugin<Project> {
     ) {
         val ndkDir = this.findNdkDirectory(project)
 
-        finalizeDsl { dsl ->
-            dsl.testOptions.unitTests.all { testTask ->
-                (testTask as? AndroidUnitTest)?.let {
-                    val buildType =
-                        it.variantName.removeSuffix("UnitTest").toCargoBuildType()
-                            ?: throw GradleException("Unknown buildType ${it.variantName}")
-                    testTask.dependsOn(project.tasks.named(makeHostCargoBuildTaskName(buildType)))
-                    testTask.systemProperty(
-                        "java.library.path",
-                        makeHostCargoOutputDir(cargoExtension, buildType)
-                    )
-                }
-            }
-        }
+//        finalizeDsl { dsl ->
+//            dsl.testOptions.unitTests.all { testTask ->
+//                (testTask as? AndroidUnitTest)?.let {
+//                    val buildType =
+//                        it.variantName.removeSuffix("UnitTest").toCargoBuildType()
+//                            ?: throw GradleException("Unknown buildType ${it.variantName}")
+//                    testTask.dependsOn(project.tasks.named(makeHostCargoBuildTaskName(buildType)))
+//                    testTask.systemProperty(
+//                        "java.library.path",
+//                        makeHostCargoOutputDir(cargoExtension, buildType)
+//                    )
+//                }
+//            }
+//        }
 
-        //                        println(testTask::class.java)
-        //                        println(( testTask as? AndroidUnitTest?)?.variantName)
-        //                        val buildType = if(?.variantName?.removeSuffix("UnitTest")
-
-        //                val buildType =
-        //                    if (testTask.name.contains("debug", ignoreCase = true))
-        // CargoBuildType.DEBUG
-        //                    else CargoBuildType.RELEASE
-        //
-        //                testTask.systemProperty(
-        //                    "java.library.path",
-        //                    cargoExtension.hostLibsOut.dir(buildType.toString()).get().toString()
-        //                )
-        //                testTask.dependsOn(
-        //                    project.tasks.named(
-        //                        "$cargoBuildHostTaskBaseName${buildType.toString().capitalized()}"
-        //                    )
-        //                )
-        //        val cargoReleaseHostTask =
-        //            project.registerHostCargoTask(cargoExtension, CargoBuildType.RELEASE)
-        //        val cargoDebugHostTask =
-        //            project.registerHostCargoTask(cargoExtension, CargoBuildType.DEBUG)
+//        beforeVariants {
+//            (it as? HasUnitTest)?.unitTest?.sources
+//        }
 
         // Create one task per variant and ABI
         onVariants { variant ->
@@ -154,17 +136,21 @@ class CargoPlugin : Plugin<Project> {
                 println("${it.name}: ${it.runtimeConfiguration.attributes.toString()}")
             }
             variant.components
-                .filter { it.name.contains("unitTest", true) }
+                .filter { it is HasUnitTest}
                 .forEach { component ->
-                    val nativeCargoTask = project.registerHostCargoTask(cargoExtension, buildType)
+//                    val nativeCargoTask = project.registerHostCargoTask(cargoExtension, buildType)
 
-                    val newConfig = project.registerHostCargoConfig(component)
+//                    component.sources.resources!!.addGeneratedSourceDirectory(nativeCargoTask, CargoBuildHostTask::outLibDir)
 
-                    project.artifacts { artifacts ->
-                        artifacts.add(newConfig.name, nativeCargoTask.get().outputFile) {
-                            it.builtBy(nativeCargoTask)
-                        }
-                    }
+
+//
+//                    val newConfig = project.registerHostCargoConfig(component)
+//
+//                    project.artifacts { artifacts ->
+//                        artifacts.add(newConfig.name, nativeCargoTask.get().outputFile) {
+//                            it.builtBy(nativeCargoTask)
+//                        }
+//                    }
 
                     //
                     // variant.sources.resources!!.addGeneratedSourceDirectory(nativeCargoTask,

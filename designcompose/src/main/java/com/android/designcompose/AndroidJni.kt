@@ -16,15 +16,12 @@
 
 package com.android.designcompose
 
-import com.android.designcompose.serdegen.ConvertResponse
-import com.novi.bincode.BincodeDeserializer
 
-internal object LiveUpdate {
-    fun fetchDocBytes(docId: String, requestJson: String, proxyConfig: ProxyConfig): ByteArray? {
-        val serializedResponse: ByteArray = AndroidJni.jniFetchDoc(docId, requestJson, proxyConfig)
-        val deserializer = BincodeDeserializer(serializedResponse)
-        val convResp = ConvertResponse.deserialize(deserializer)
-        if (convResp is ConvertResponse.Document) return convResp.value.toByteArray()
-        return null
+
+internal object AndroidJni : JniInterface() {
+
+    init {
+        println("AndroidInit")
+        System.loadLibrary("jni")
     }
 }

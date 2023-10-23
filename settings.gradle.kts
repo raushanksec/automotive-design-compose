@@ -41,6 +41,7 @@ dependencyResolutionManagement {
 rootProject.name = "DesignCompose"
 
 include(":designcompose")
+include(":designcompose-test")
 
 include(":annotation")
 

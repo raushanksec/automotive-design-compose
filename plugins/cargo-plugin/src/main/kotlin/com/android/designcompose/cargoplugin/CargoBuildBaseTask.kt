@@ -95,7 +95,7 @@ abstract class CargoBuildBaseTask : DefaultTask() {
 
         group = "build"
         // Try to get the cargo build started earlier in the build execution.
-        shouldRunAfter(project.tasks.named("preBuild"))
+//        shouldRunAfter(project.tasks.named("preBuild"))
     }
 
     fun baseExecOptions(

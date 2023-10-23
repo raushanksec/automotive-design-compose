@@ -20,7 +20,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.android.designcompose.AccessDeniedException
 import com.android.designcompose.Feedback
 import com.android.designcompose.FigmaFileNotFoundException
-import com.android.designcompose.Jni
+import com.android.designcompose.AndroidJni
 import com.android.designcompose.LiveUpdate
 import com.android.designcompose.ProxyConfig
 import com.android.designcompose.common.DocumentServerParams
@@ -46,7 +46,7 @@ val dummyFigmaTokenJson = constructPostJson("NOT_A_FIGMA_TOKEN", null, DocumentS
  * These tests can be excluded by running Gradle with:
  * -Pandroid.testInstrumentationRunnerArguments.notPackage=com.android.designcompose.figmaIntegrationTests
  */
-class JniFetchTests {
+class AndroidJniFetchTests {
 
     private val actualFigmaToken: String? =
         InstrumentationRegistry.getArguments().getString("FIGMA_ACCESS_TOKEN")
@@ -63,7 +63,7 @@ class JniFetchTests {
     @Test
     fun invalidDocId() {
         assertFailsWith<FigmaFileNotFoundException> {
-            Jni.jniFetchDoc("InvalidDocID", firstFetchJson, ProxyConfig())
+            AndroidJni.jniFetchDoc("InvalidDocID", firstFetchJson, ProxyConfig())
         }
     }
 
@@ -94,7 +94,7 @@ class JniFetchTests {
     @Test
     fun invalidToken() {
         assertFailsWith(AccessDeniedException::class) {
-            Jni.jniFetchDoc("DummyDocId", dummyFigmaTokenJson, ProxyConfig())
+            AndroidJni.jniFetchDoc("DummyDocId", dummyFigmaTokenJson, ProxyConfig())
         }
     }
 }
