@@ -1,8 +1,8 @@
 package com.android.designcompose
 
-import androidx.annotation.VisibleForTesting
-
 import androidx.annotation.Keep
+import androidx.annotation.VisibleForTesting
+import com.android.designcompose.common.JniLoader
 
 // HTTP Proxy configuration.
 data class HttpProxyConfig(val proxySpec: String)
@@ -20,8 +20,10 @@ internal class TextSize(
     var height: Float = 0F,
 )
 
+
 // Can't be an interface because interfaces don't allow external functions
-open class JniInterface {
+internal object Jni {
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     external fun jniFetchDoc(
         docId: String,
@@ -59,4 +61,8 @@ open class JniInterface {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     external fun jniComputeLayout(): ByteArray?
+
+    init{
+        JniLoader.loadDefaultImpl()
+    }
 }

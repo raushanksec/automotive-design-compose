@@ -118,6 +118,7 @@ dependencies {
     testImplementation(libs.roborazzi.junit)
     testImplementation(libs.androidx.test.espresso.core)
     testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(project(":test-utils"))
 
     androidTestImplementation(kotlin("test"))
     androidTestImplementation(libs.google.truth)

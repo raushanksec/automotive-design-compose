@@ -92,6 +92,8 @@ dependencies {
     debugImplementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha04")
 
     testImplementation(kotlin("test"))
+    testImplementation(project(":test-utils"))
+    testImplementation(project(":host-jni"))
     testImplementation(libs.google.truth)
     testImplementation(libs.robolectric)
     testImplementation(libs.roborazzi)

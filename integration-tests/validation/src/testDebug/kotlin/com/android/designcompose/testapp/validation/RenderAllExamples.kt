@@ -26,8 +26,10 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.onSiblings
 import com.android.designcompose.DesignSettings
 import com.android.designcompose.DocRenderStatus
+import com.android.designcompose.common.JniLoader
 import com.android.designcompose.docClassSemanticsKey
 import com.android.designcompose.docRenderStatusSemanticsKey
+import com.android.designcompose.test.loadFromJar
 import com.github.takahirom.roborazzi.RoborazziRule
 import java.io.File
 import org.junit.BeforeClass
@@ -90,6 +92,7 @@ class RenderAllExamples(private val config: TestConfig) {
         @JvmStatic
         @BeforeClass
         fun setUp() {
+            JniLoader.loadFromJar()
             DesignSettings.addFontFamily("Inter", interFont)
         }
     }

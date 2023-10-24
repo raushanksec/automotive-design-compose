@@ -53,7 +53,7 @@ abstract class CargoBuildBaseTask : DefaultTask() {
 
     @get:OutputDirectory abstract val outLibDir: DirectoryProperty
 
-    @get:OutputFile abstract val outputFile: RegularFileProperty
+//    @get:OutputFile abstract val outputFile: RegularFileProperty
 
     @get:Internal abstract val cargoTargetDir: DirectoryProperty
 
@@ -91,7 +91,7 @@ abstract class CargoBuildBaseTask : DefaultTask() {
         cargoTargetDir.set(
             project.layout.buildDirectory.map { it.dir("intermediates/cargoTarget") }
         )
-        outputFile.set(outLibDir.flatMap { project.provider { it.file("libjni.so") } })
+//        outputFile.set(outLibDir.flatMap { project.provider { it.file("libjni.so") } })
 
         group = "build"
         // Try to get the cargo build started earlier in the build execution.

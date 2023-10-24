@@ -20,13 +20,13 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.onSiblings
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.android.designcompose.DocRenderStatus
+import com.android.designcompose.common.JniLoader
 import com.android.designcompose.docClassSemanticsKey
 import com.android.designcompose.docRenderStatusSemanticsKey
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,8 +46,13 @@ import org.robolectric.annotation.GraphicsMode
 class RenderHelloWorld {
     @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    @
-
+    companion object {
+        @JvmStatic
+        @BeforeClass
+        fun beforeClass(): Unit {
+            JniLoader.loadFromJar()
+        }
+    }
 
     @Test
     fun testHello() {
@@ -61,7 +66,7 @@ class RenderHelloWorld {
                         DocRenderStatus.Rendered
                     )
                 )
-//            onNodeWithText("Testers!", substring = true).assertExists()
+            //            onNodeWithText("Testers!", substring = true).assertExists()
         }
     }
 }
