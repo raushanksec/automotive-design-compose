@@ -1,13 +1,13 @@
-https://ganpati2.corp.google.com/group/aae-design-compose-source-developers-policy.prod?tab=descendantspackage com.android.designcompose
+package com.android.designcompose
+import com.android.designcompose.DesignSwitcherDoc
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.android.designcompose.common.JniLoader
-import com.android.designcompose.test.loadFromJar
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.RoborazziRule
 import org.junit.BeforeClass
@@ -28,14 +28,6 @@ fun DesignSwitcherDeadbeef() {
 class TestDesignSwitcher {
     @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    companion object {
-        @JvmStatic
-        @BeforeClass
-        fun beforeClass() {
-            JniLoader.loadFromJar()
-        }
-    }
-
     @get:Rule
     val roborazziRule =
         RoborazziRule(
@@ -54,13 +46,13 @@ class TestDesignSwitcher {
     fun testInitialLoad() {
         with(composeTestRule) {
             setContent { DesignSwitcherDeadbeef() }
-            onNode(
+            onNode(SemanticsMatcher.expectValue(docClassSemanticsKey, DesignSwitcherDoc.javaClass.name))
+                .assert(
                     SemanticsMatcher.expectValue(
-                        docClassSemanticsKey,
-                        DesignSwitcherDoc.javaClass.name
+                        docRenderStatusSemanticsKey,
+                        DocRenderStatus.Rendered
                     )
                 )
-                .assertExists()
         }
     }
 }
