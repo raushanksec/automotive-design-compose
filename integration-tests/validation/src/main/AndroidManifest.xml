@@ -24,10 +24,10 @@
             android:exported="true"
             android:label="@string/title_activity_battleship"
             android:theme="@style/Theme.Validation.NoActionBar">
-            <intent-filter>
-                <action android:name="com.android.benchmark.battleship" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="com.android.benchmark.battleship" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <profileable android:shell="true" />

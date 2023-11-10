@@ -86,9 +86,7 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
 
-    packaging { resources { excludes.add("/META-INF/{AL2.0,LGPL2.1}")
-        excludes += "/META-INF/{AL2.0,LGPL2.1}"
-    } }
+    packaging { resources { excludes.add("/META-INF/{AL2.0,LGPL2.1}") } }
 
     // Hacky: GH-502
     testOptions {
@@ -103,13 +101,6 @@ android {
                 )
             }
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
     // End Hacky
 
@@ -128,7 +119,7 @@ dependencies {
 //    implementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha02")
 //    implementation("androidx.tracing:tracing-perfetto:1.0.0")
 //    implementation("androidx.tracing:tracing-perfetto-binary:1.0.0")
-//    implementation("androidx.tracing:tracing-ktx:1.2.0-rc01")
+    implementation("androidx.tracing:tracing-ktx:1.1.0")
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
