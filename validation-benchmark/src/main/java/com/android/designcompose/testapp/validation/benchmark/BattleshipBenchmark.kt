@@ -24,6 +24,6 @@ class BattleshipBenchmark {
         startupMode = StartupMode.COLD
     ) {
         pressHome()
-        startActivityAndWait(Intent("com.android.benchmark.battleship"))
+        startActivityAndWait(Intent("com.android.designcompose.benchmark.battleship" ))
     }
 }
