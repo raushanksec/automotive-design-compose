@@ -18,6 +18,8 @@ package com.android.designcompose.testapp.validation.examples
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.tracing.Trace
+import androidx.tracing.trace
 import com.android.designcompose.annotation.DesignComponent
 import com.android.designcompose.annotation.DesignDoc
 
@@ -29,5 +31,5 @@ interface Battleship {
 
 @Composable
 fun BattleshipTest() {
-    BattleshipDoc.MainFrame(Modifier)
+   BattleshipDoc.MainFrame(Modifier)
 }

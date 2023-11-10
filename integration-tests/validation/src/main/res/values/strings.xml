@@ -15,6 +15,7 @@
 -->
 
 <resources>
-  <string name="app_name">Validation</string>
+    <string name="app_name">Validation</string>
+    <string name="title_activity_battleship">Battleship</string>
 
 </resources>

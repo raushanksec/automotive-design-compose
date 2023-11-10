@@ -19,6 +19,12 @@
         android:taskAffinity="${applicationId}"
         android:theme="@style/Theme.Validation"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".benchmarks.Battleship"
+            android:exported="true"
+            android:label="@string/title_activity_battleship"
+            android:theme="@style/Theme.Validation" />
+
         <profileable android:shell="true" />
 
         <activity
