@@ -116,10 +116,10 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.material)
-//    implementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha02")
+    implementation("androidx.compose.runtime:runtime-tracing:1.0.0-alpha04")
 //    implementation("androidx.tracing:tracing-perfetto:1.0.0")
 //    implementation("androidx.tracing:tracing-perfetto-binary:1.0.0")
-    implementation("androidx.tracing:tracing-ktx:1.1.0")
+    implementation("androidx.tracing:tracing-ktx:1.3.0-alpha02")
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

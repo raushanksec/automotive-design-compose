@@ -21,9 +21,21 @@ class BattleshipBenchmark {
         packageName = "com.android.designcompose.testapp.validation",
         metrics = listOf(StartupTimingMetric()),
         iterations = 5,
-        startupMode = StartupMode.COLD
+        startupMode = StartupMode.COLD,
+        setupBlock = {
+            pressHome()
+        }
     ) {
-        pressHome()
         startActivityAndWait(Intent("com.android.designcompose.benchmark.battleship" ))
     }
+//
+//    @Test
+//    fun switchBackandForth() = benchmarkRule.measureRepeated(
+//        packageName = "com.android.designcompose.testapp.validation",
+//        metrics = listOf(StartupTimingMetric()),
+//        iterations = 5,
+//        setupBlock = {
+//            val firstTime = false
+//        }
+//    )
 }
