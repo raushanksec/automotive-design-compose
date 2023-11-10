@@ -19,9 +19,11 @@ package com.android.designcompose.testapp.validation.examples
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.android.designcompose.GetDesignNodeData
 import com.android.designcompose.ListContent
 import com.android.designcompose.ListContentData
+import com.android.designcompose.ParentLayoutInfo
 import com.android.designcompose.annotation.Design
 import com.android.designcompose.annotation.DesignComponent
 import com.android.designcompose.annotation.DesignContentTypes
@@ -116,6 +118,7 @@ interface GridLayoutTest {
     fun VSectionTitle(@Design(node = "#Title") title: String)
 }
 
+@Preview()
 @Composable
 fun GridLayoutTest() {
     val vertItems: ArrayList<Pair<GridItemType, String>> = arrayListOf()
@@ -158,19 +161,42 @@ fun GridLayoutTest() {
     }
 
     @Composable
-    fun itemComposable(items: ArrayList<Pair<GridItemType, String>>, index: Int) {
+    fun itemComposable(
+        items: ArrayList<Pair<GridItemType, String>>,
+        index: Int,
+        parentLayout: ParentLayoutInfo
+    ) {
         when (items[index].first) {
             GridItemType.SectionTitle -> GridLayoutTestDoc.SectionTitle(title = items[index].second)
             GridItemType.VSectionTitle ->
-                GridLayoutTestDoc.VSectionTitle(title = items[index].second)
+                GridLayoutTestDoc.VSectionTitle(
+                    title = items[index].second,
+                    parentLayout = parentLayout
+                )
             GridItemType.RowGrid ->
-                GridLayoutTestDoc.Item(type = ItemType.Grid, title = items[index].second)
+                GridLayoutTestDoc.Item(
+                    type = ItemType.Grid,
+                    title = items[index].second,
+                    parentLayout = parentLayout
+                )
             GridItemType.RowList ->
-                GridLayoutTestDoc.Item(type = ItemType.List, title = items[index].second)
+                GridLayoutTestDoc.Item(
+                    type = ItemType.List,
+                    title = items[index].second,
+                    parentLayout = parentLayout
+                )
             GridItemType.ColGrid ->
-                GridLayoutTestDoc.VItem(type = ItemType.Grid, title = items[index].second)
+                GridLayoutTestDoc.VItem(
+                    type = ItemType.Grid,
+                    title = items[index].second,
+                    parentLayout = parentLayout
+                )
             GridItemType.ColList ->
-                GridLayoutTestDoc.VItem(type = ItemType.List, title = items[index].second)
+                GridLayoutTestDoc.VItem(
+                    type = ItemType.List,
+                    title = items[index].second,
+                    parentLayout = parentLayout
+                )
         }
     }
 
@@ -183,8 +209,8 @@ fun GridLayoutTest() {
                     val nodeData = getNodeData(vertItems, index)
                     spanFunc(nodeData)
                 },
-            ) { index ->
-                itemComposable(vertItems, index)
+            ) { index, parentLayout ->
+                itemComposable(vertItems, index, parentLayout)
             }
         },
         vertical2 = { spanFunc ->
@@ -194,8 +220,8 @@ fun GridLayoutTest() {
                     val nodeData = getNodeData(vertItems, index)
                     spanFunc(nodeData)
                 },
-            ) { index ->
-                itemComposable(vertItems, index)
+            ) { index, parentLayout ->
+                itemComposable(vertItems, index, parentLayout)
             }
         },
         horizontal1 = { spanFunc ->
@@ -205,8 +231,8 @@ fun GridLayoutTest() {
                     val nodeData = getNodeData(horizItems, index)
                     spanFunc(nodeData)
                 },
-            ) { index ->
-                itemComposable(horizItems, index)
+            ) { index, parentLayout ->
+                itemComposable(horizItems, index, parentLayout)
             }
         },
         horizontal2 = { spanFunc ->
@@ -216,8 +242,8 @@ fun GridLayoutTest() {
                     val nodeData = getNodeData(horizItems, index)
                     spanFunc(nodeData)
                 },
-            ) { index ->
-                itemComposable(horizItems, index)
+            ) { index, parentLayout ->
+                itemComposable(horizItems, index, parentLayout)
             }
         },
     )
