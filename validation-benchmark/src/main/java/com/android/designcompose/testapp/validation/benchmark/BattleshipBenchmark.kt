@@ -1,5 +1,6 @@
 package com.android.designcompose.testapp.validation.benchmark
 
+import android.content.Intent
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.TraceSectionMetric
@@ -16,13 +17,13 @@ class BattleshipBenchmark {
     val benchmarkRule = MacrobenchmarkRule()
 
     @Test
-    fun showBattleShip() = benchmarkRule.measureRepeated(
+    fun startup() = benchmarkRule.measureRepeated(
         packageName = "com.android.designcompose.testapp.validation",
         metrics = listOf(StartupTimingMetric()),
         iterations = 5,
         startupMode = StartupMode.COLD
     ) {
         pressHome()
-        startActivityAndWait()
+        startActivityAndWait(Intent("com.android.benchmark.battleship"))
     }
 }

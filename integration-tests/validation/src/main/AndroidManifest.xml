@@ -23,7 +23,12 @@
             android:name=".benchmarks.Battleship"
             android:exported="true"
             android:label="@string/title_activity_battleship"
-            android:theme="@style/Theme.Validation" />
+            android:theme="@style/Theme.Validation.NoActionBar">
+            <intent-filter>
+                <action android:name="com.android.benchmark.battleship" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <profileable android:shell="true" />
 
@@ -41,7 +46,6 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -59,7 +63,6 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
