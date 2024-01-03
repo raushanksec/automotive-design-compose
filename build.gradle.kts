@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask
-
 buildscript {
     repositories {
         google()
@@ -31,6 +29,7 @@ buildscript {
 
 plugins {
     id("designcompose.conventions.base")
+    id("designcompose.conventions.ktfmt-check-build-scripts")
     id("designcompose.conventions.android-test-devices") apply false
     id("designcompose.conventions.roborazzi") apply false
     alias(libs.plugins.androidApplication) apply false
@@ -46,25 +45,8 @@ plugins {
     // End Hacky
 }
 
-// Format all *.gradle.kts files in the repository. This should catch all buildscripts.
-// This task must be run on it's own, since it modifies the build scripts for everything else and
-// Gradle throws an error.
-tasks.register<KtfmtFormatTask>("ktfmtFormatBuildScripts") {
-    source = project.layout.projectDirectory.asFileTree
-    exclude { it.path.contains("/build/") }
-    include("**/*.gradle.kts")
-    notCompatibleWithConfigurationCache(
-        "Doesn't seem to read the codestyle set in the ktfmt extension"
-    )
-    doFirst {
-        @Suppress("UnstableApiUsage")
-        if (this.project.gradle.startParameter.isConfigurationCacheRequested) {
-            throw GradleException(
-                "This task will not run properly with the Configuration Cache. " +
-                    "You must rerun with '--no-configuration-cache'"
-            )
-        }
-    }
+interface BuildFeaturesProvider {
+    @get:Inject val buildFeatures: BuildFeatures
 }
 
 tasks.named("ktfmtCheck") { dependsOn(gradle.includedBuilds.map { it.task(":ktfmtCheck") }) }
