@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.designcompose.Meter
@@ -41,7 +42,11 @@ interface DialsGaugesTest {
         @Design(node = "#arc-angle") arcAngle: Meter,
         @Design(node = "#needle-rotation") needleRotation: Meter,
         @Design(node = "#progress-bar") progressBar: Meter,
+        @Design(node = "#progress-bar-test") progressBarTest: Meter,
+        @Design(node = "#progress-bar-test") progressBarTestModifier: Modifier,
         @Design(node = "#progress-indicator") progressIndicator: Meter,
+        @Design(node = "#progress-indicator-test") progressIndicatorTest: Meter,
+        @Design(node = "#progress-indicator-test") progressIndicatorTestModifier: Modifier,
     )
 }
 
@@ -55,7 +60,11 @@ fun DialsGaugesTest() {
         arcAngle = angle.value,
         needleRotation = rotation.value,
         progressBar = progress.value,
+        progressBarTest = progress.value,
+        progressBarTestModifier = Modifier.testTag("progressBarTest"),
         progressIndicator = progressIndicator.value,
+        progressIndicatorTest = progressIndicator.value,
+        progressIndicatorTestModifier = Modifier.testTag("progressIndicatorTest"),
     )
 
     Row(
@@ -80,6 +89,10 @@ fun DialsGaugesTest() {
     ) {
         Text("Progress Bar: ", Modifier.width(120.dp), fontSize = 20.sp)
         Slider(progress, 0f, 100f)
+        androidx.compose.material.Button(
+            modifier = Modifier.testTag("ProgressBar25"),
+            onClick = { progress.value = 25f }
+        ) { Text("25") }
         Text(progress.value.toString(), fontSize = 20.sp)
     }
     Row(
@@ -88,6 +101,10 @@ fun DialsGaugesTest() {
     ) {
         Text("Progress Indicator: ", Modifier.width(120.dp), fontSize = 20.sp)
         Slider(progressIndicator, 0f, 100f)
+        androidx.compose.material.Button(
+            modifier = Modifier.testTag("ProgressIndicator25"),
+            onClick = { progressIndicator.value = 50f }
+        ) { Text("25") }
         Text(progressIndicator.value.toString(), fontSize = 20.sp)
     }
 }
