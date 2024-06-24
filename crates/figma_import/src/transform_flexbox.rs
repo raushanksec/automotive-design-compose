@@ -15,7 +15,7 @@
 use std::collections::HashMap;
 use std::f32::consts::PI;
 
-use crate::toolkit_font_style::{FontStyle, FontWeight};
+use crate::toolkit_font_style::FontWeight;
 use crate::toolkit_layout_style::Overflow;
 
 use crate::toolkit_style::{
@@ -42,6 +42,7 @@ use crate::{
 };
 
 use dc_bundle::definition::layout::FlexWrap;
+use dc_bundle::legacy_definition::element::font::FontStyle;
 use dc_bundle::legacy_definition::element::geometry::Dimension;
 use dc_bundle::legacy_definition::layout::grid::ItemSpacing;
 use dc_bundle::legacy_definition::layout::positioning::{
@@ -1245,7 +1246,7 @@ fn visit_node(
                     style.node_style.font_weight.clone()
                 };
                 let font_style = if let Some(true) = sub_style.italic {
-                    crate::toolkit_font_style::FontStyle::Italic
+                    FontStyle::Italic
                 } else {
                     style.node_style.font_style.clone()
                 };
