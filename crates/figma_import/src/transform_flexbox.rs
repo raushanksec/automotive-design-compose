@@ -1374,15 +1374,16 @@ fn visit_node(
         ]
     };
 
-    let make_rect = |is_mask| -> ViewShape {
+    let make_rect = |is_mask, clips_content| -> ViewShape {
         if has_corner_radius {
             ViewShape::RoundRect {
                 corner_radius: corner_radius.clone(),
                 corner_smoothing: 0.0, // Not in Figma REST API
-                is_mask: is_mask,
+                is_mask,
+                clips_content,
             }
         } else {
-            ViewShape::Rect { is_mask }
+            ViewShape::Rect { is_mask, clips_content }
         }
     };
 
@@ -1424,8 +1425,8 @@ fn visit_node(
         | NodeData::Group { frame }
         | NodeData::Component { frame }
         | NodeData::ComponentSet { frame }
-        | NodeData::Instance { frame, .. } => make_rect(frame.is_mask),
-        _ => make_rect(false),
+        | NodeData::Instance { frame, .. } => make_rect(frame.is_mask, frame.clips_content),
+        _ => make_rect(false, true),
     };
 
     for effect in &node.effects {

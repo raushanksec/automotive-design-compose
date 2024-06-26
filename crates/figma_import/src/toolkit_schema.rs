@@ -75,11 +75,13 @@ impl ColorOrVar {
 pub enum ViewShape {
     Rect {
         is_mask: bool,
+        clips_content: bool,
     },
     RoundRect {
         corner_radius: [NumOrVar; 4],
         corner_smoothing: f32,
         is_mask: bool,
+        clips_content: bool,
     },
     Path {
         path: Vec<crate::vector_schema::Path>,
